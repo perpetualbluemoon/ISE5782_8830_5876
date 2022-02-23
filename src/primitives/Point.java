@@ -2,6 +2,11 @@ package primitives;
 
 import java.util.Objects;
 
+/***
+ * Class Point is the basic class representing a point of euclidean geometry in cartesian
+ * three dimensional coordinate system.
+ */
+
 public class Point {
     final Double3 _xyz;
 
@@ -10,12 +15,17 @@ public class Point {
         _xyz = new Double3(d1, d2, d3);
     }
 
+    public Point(Double3 xyz) {
+        _xyz = xyz;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Point point = (Point) o;
-        return Objects.equals(_xyz, point._xyz);
+        return _xyz.equals(point._xyz);
     }
 
     @Override
@@ -48,8 +58,8 @@ public class Point {
 
     /***
      *
-     * @param vector
-     * @return
+     * @param vector to add to vector
+     * @return point result of vector addition
      */
     public Point add(Vector vector) {
         return new Point(
@@ -58,4 +68,22 @@ public class Point {
                 _xyz.d3 + vector._xyz.d3
         );
     }
+
+
+    /***
+     *
+     * @param p one of the points for comparison
+     * @return returns the distance between two points
+     */
+    public double distanceSquared(Point p){
+        double a = _xyz.d1 - p._xyz.d1;
+        double b = _xyz.d2 - p._xyz.d2;
+        double c = _xyz.d3 - p._xyz.d3;
+
+        return a*a + b*b + c*c;
+        }
+
+        public double distance(Point p){
+        return Math.sqrt(distanceSquared(p));
+        }
 }

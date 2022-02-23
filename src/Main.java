@@ -19,7 +19,8 @@ public final class Main {
 		try { // test zero vector
 			new Vector(0, 0, 0);
 			out.println("ERROR: zero vector does not throw an exception");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 		}
 
 		Vector v1 = new Vector(1, 2, 3);

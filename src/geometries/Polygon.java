@@ -17,6 +17,7 @@ public class Polygon implements Geometry {
 	 */
 	protected List<Point> vertices;
 	/**
+	 * !!our question!! should the list be final?
 	 * Associated plane in which the polygon lays
 	 */
 	protected Plane plane;
@@ -50,7 +51,7 @@ public class Polygon implements Geometry {
 		// Generate the plane according to the first three vertices and associate the
 		// polygon with this plane.
 		// The plane holds the invariant normal (orthogonal unit) vector to the polygon
-		plane = new Plane(vertices[0], vertices[1], vertices[2]);
+		plane = new Plane(vertices[0], vertices[1], vertices[2], vertices[0]);
 		if (vertices.length == 3)
 			return; // no need for more tests for a Triangle
 
@@ -86,6 +87,6 @@ public class Polygon implements Geometry {
 
 	@Override
 	public Vector getNormal(Point point) {
-		return plane.getNormal();
+		return plane.getNormal(point);
 	}
 }
