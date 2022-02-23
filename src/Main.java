@@ -4,8 +4,8 @@ import static primitives.Util.*;
 
 /**
  * Test program for the 1st stage
- *
- * @author Dan Zilberstein
+ * Nechama Eri-Barron 328958830 nechamaeri@gmail.com
+ * Chaya Yazersky 322275876 chay7040@gmail.com
  */
 public final class Main {
 
