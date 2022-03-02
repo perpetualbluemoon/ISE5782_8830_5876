@@ -4,6 +4,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import static primitives.Util.isZero;
+
 /***
  * Class Cylinder extends class Tube and represents the geometrical shape of a cylinder using height and the attributes
  * of the parent class
@@ -32,7 +34,20 @@ public class Cylinder extends Tube{
 
     @Override
     public Vector getNormal(Point point) {
-        return super.getNormal(point);
+        if (point == axisRay.getP0()){
+            return axisRay.getDir().normalize();
+        }
+        Vector v= point.subtract(axisRay.getP0());
+        double t = axisRay.getDir().dotProduct(v);
+
+        if(isZero(t)||isZero(t-height)){
+            return axisRay.getDir().normalize();
+        }
+        else {
+            return super.getNormal(point);
+        }
+
+
     }
 
 }

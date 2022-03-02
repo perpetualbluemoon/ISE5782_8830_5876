@@ -70,6 +70,7 @@ public class Point {
     }
 
 
+
     /***
      *
      * @param p one of the points for comparison

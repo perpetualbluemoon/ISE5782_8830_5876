@@ -13,9 +13,8 @@ public class Plane implements Geometry {
 
     public Plane(Point g0, Vector normal) {
         _g0 = g0;
-        _normal = normal;
+        _normal = normal.normalize();
     }
-
     public Plane(Point p1, Point p2, Point p3, Point g0){
         _g0 = p1;
         Vector U = p2.subtract(p1);
@@ -47,9 +46,9 @@ public class Plane implements Geometry {
         return getNormal();
     }
 
+    //we added .normalize() and then it worked but the normal should be normalized already
     public Vector getNormal(){
-        return _normal;
+        return _normal.normalize();
     }
-
 }
 
