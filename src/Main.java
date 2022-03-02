@@ -40,7 +40,8 @@ public final class Main {
 			out.println("ERROR: dotProduct() wrong value");
 
 		// test Cross-Product
-		try { // test zero vector
+		// test zero vector
+		try {
 			v1.crossProduct(v2);
 			out.println("ERROR: crossProduct() for parallel vectors does not throw an exception");
 		} catch (Exception e) {
