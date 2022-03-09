@@ -10,7 +10,7 @@ import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
 /***
- * Plane class represents a two dimensional plane with cartesian coordinates
+ * Plane class represents a 2D plane with cartesian coordinates
  */
 
 public class Plane implements Geometry {
