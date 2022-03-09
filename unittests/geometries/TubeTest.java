@@ -7,7 +7,7 @@ import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.*;
 /**
- * Unit tests for primitives.Tube class
+ * Unit tests for geometries.Tube class
  * @author Nechama Eri-Barron and Chaya Yazersky
  */
 

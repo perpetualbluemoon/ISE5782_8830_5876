@@ -7,7 +7,7 @@ import primitives.Vector;
  * Geometry is an interface for interacting with basic geometric shapes
  * */
 
-public interface Geometry {
+public interface Geometry extends Intersectable{
     /***
      *
      * @param point

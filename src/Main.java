@@ -17,6 +17,9 @@ public final class Main {
 	public static void main(String[] args) {
 
 		try { // test zero vector
+			Vector x=new Vector(-1,1,1);
+			Vector y=new Vector(1,-3,1);
+			out.println(x.crossProduct(y));
 			new Vector(0, 0, 0);
 			out.println("ERROR: zero vector does not throw an exception");
 		}
@@ -74,4 +77,5 @@ public final class Main {
 
 		out.println("If there were no any other outputs - all tests succeeded!");
 	}
+
 }

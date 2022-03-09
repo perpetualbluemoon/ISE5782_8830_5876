@@ -19,6 +19,9 @@ public class Point {
         _xyz = xyz;
     }
 
+    public Double3 getXyz() {
+        return _xyz;
+    }
 
     @Override
     public boolean equals(Object o) {

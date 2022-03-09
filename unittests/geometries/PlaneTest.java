@@ -3,8 +3,14 @@ package geometries;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
 import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Unit tests for geometries.Plane class
+ * @author Nechama Eri-Barron and Chaya Yazersky
+ */
 
 class PlaneTest {
 
@@ -62,4 +68,30 @@ class PlaneTest {
                 "Incorrect normal vector");
     }
 
+    @Test
+    void testFindIntersections() {
+        Plane p = new Plane(new Point(1,0,0), new Vector(0,0,1));
+
+        // ====== Equivalence Partition Tests ======
+        // TC00: Ray is parallel to the plane
+        Ray r1 = new Ray (new Point(0,0,1), new Vector (0,1,0));
+        assertEquals(null, p.findIntersections(r1), "Ray is parallel to plane");
+
+        //TC01: Ray is contained in the plane
+        Ray r2 = new Ray (new Point(0,-1,0), new Vector (0,1,0));
+        assertEquals(null, p.findIntersections(r2), "Ray is parallel to plane");
+
+        //TC02: Ray intersects the plane chaya
+        Ray r3 = new Ray (new Point(-1,-1,-1), new Vector (1,1,1));
+        assertEquals(new Point(0,0,0), p.findIntersections(r3).get(0), "Intersection calculated incorrectly");
+
+        //Ray intersects with 90 degree angle
+        Ray r4 = new Ray (new Point(0,1,-1), new Vector (0,0,1));
+        assertEquals(new Point(0,1,0), p.findIntersections(r4).get(0), "Intersection calculated incorrectly");
+
+        //test for geometries
+        Plane planeInter = new Plane(new Point (3,0,0), new Vector(0,0,1));//one intersection
+        Ray ray = new Ray(new Point (0,0,-100), new Vector (0,0,1));
+        assertEquals(new Point (0,0,0), planeInter.findIntersections(ray).get(0), "intersected");
+    }
 }
