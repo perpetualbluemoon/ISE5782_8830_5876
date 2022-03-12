@@ -3,6 +3,7 @@ package geometries;
 import primitives.Point;
 import primitives.Ray;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,15 +16,13 @@ public class Geometries implements Intersectable{
         _geometries = new LinkedList<>();
     }
 
-    public Geometries(LinkedList<Intersectable> geometries) {
-        _geometries = geometries;
+    public Geometries(Intersectable... geometries) {
+        _geometries = new LinkedList<>();
+        Collections.addAll(_geometries, geometries);
     }
-    public Geometries(Intersectable... geometries){
-            _geometries.addAll(List.of(geometries));
 
-    }
     public void add(Intersectable... geometries){
-        _geometries.addAll(List.of(geometries));
+        Collections.addAll(_geometries, geometries);
     }
 
 
@@ -31,17 +30,19 @@ public class Geometries implements Intersectable{
         return _geometries;
     }
 
+    @Override
     public List<Point> findIntersections(Ray ray) {
-        LinkedList<Point> points = new LinkedList<>();
+        List<Point> points = null;
 
+        //for each item in the list add the intersections to the list of intersections
         for (var item : _geometries) {
             var itemList = item.findIntersections(ray);
             if (itemList != null) {
+                if(points == null){
+                    points = new LinkedList<>();
+                }
                 points.addAll(itemList);
             }
-        }
-        if (points.isEmpty()){
-            return null;
         }
         return points;
     }
