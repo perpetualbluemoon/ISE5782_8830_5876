@@ -1,9 +1,7 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
@@ -15,7 +13,10 @@ import static primitives.Util.isZero;
  * @author Nechama Eri-Barron and Chaya Yazersky
  */
 class SphereTest {
-
+    /**
+     * Test method for {@link geometries.Sphere#getNormal(Point)}.
+     * This method checks the function getNormal of sphere
+     */
     @Test
     void testGetNormal() {
         // ====== Equivalence Partition Tests ======
@@ -31,7 +32,10 @@ class SphereTest {
         //TC01: checking that the vector was calculated correctly
         assertEquals(new Vector (0,0,1),v, "Vector was calculated incorrectly");
     }
-
+    /**
+     * Test method for {@link geometries.Sphere#findIntersections(Ray)}.
+     * This method checks the function findIntersection of sphere
+     */
     @Test
     void testFindIntersections() {
         Sphere s = new Sphere (new Point(0,0,1), 3.0);

@@ -1,14 +1,9 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
-import java.util.List;
-import org.junit.jupiter.api.function.Executable;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Unit tests for geometries.Triangle class
  * @author Nechama Eri-Barron and Chaya Yazersky

@@ -2,7 +2,6 @@ package primitives;
 
 import org.junit.jupiter.api.Test;
 
-import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
 import static primitives.Util.isZero;
 
@@ -15,6 +14,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#add(primitives.Vector)}.
+     * This method checks the add function in vector
      */
     @Test
     void testAdd() {
@@ -38,6 +38,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#scale(double)}.
+     * This method checks the scale function in vector
      */
     @Test
     void testScale() {
@@ -60,6 +61,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#lengthSquared()}.
+     * This method checks the lengthSquared function
      */
     @Test
     void testLengthSquared() {
@@ -77,6 +79,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#length()}.
+     * This method checks the length function in vector
      */
     @Test
     void testLength() {
@@ -88,6 +91,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#dotProduct(Vector)}.
+     * This method checks the dotProduct function in vector
      */
     @Test
     void testDotProduct() {
@@ -105,6 +109,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#crossProduct(Vector)}.
+     * This method checks the crossProduct function in vector
      */
     @Test
     void testCrossProduct() {
@@ -130,6 +135,7 @@ class VectorTest {
 
     /**
      * Test method for {@link primitives.Vector#normalize()}.
+     * This method checks the normalize function in vector
      */
     @Test
     void testNormalize() {

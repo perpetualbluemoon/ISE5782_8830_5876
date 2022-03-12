@@ -1,13 +1,12 @@
 package geometries;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import org.junit.jupiter.api.Test;
+import primitives.*;
+
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for geometries.Geometries class
@@ -16,6 +15,10 @@ import java.util.List;
 
 public class GeometriesTest {
     @Test
+    /**
+     * Test method for {@link geometries.Geometries#add()}.
+     * This method checks the function add that adds intersectables to list
+     */
     void testAdd() {
         Geometries g = new Geometries();
         Plane p = new Plane(new Point(1,0,0), new Vector(0,0,1));
@@ -50,36 +53,19 @@ public class GeometriesTest {
         assertNull(g0.findIntersections(ray), "Empty list does not return intersections");
 
         //TC01: No Geometry has intersections with ray
-        LinkedList<Intersectable> l1 = new LinkedList<Intersectable>();
-        l1.add(planeNoInter);
-        l1.add(sphereNoInter);
-        l1.add(triangleNoInter);
-        Geometries g1 = new Geometries(l1);
+        Geometries g1 = new Geometries(planeNoInter, sphereNoInter, triangleNoInter);
         assertNull(g1.findIntersections(ray), "No geometries failure");
 
         //TC02: Only one Geometry has intersections with the ray
-        LinkedList<Intersectable> l2 = new LinkedList<Intersectable>();
-        l2.add(planeInter);
-        l2.add(sphereNoInter);
-        l2.add(triangleNoInter);
-        Geometries g2 = new Geometries(l2);
+        Geometries g2 = new Geometries(planeInter, sphereNoInter, triangleNoInter);
         assertEquals(1,g2.findIntersections(ray).size(), "No geometry intersections failure");
 
         //TC03: Several geometries but not all have intersections with the ray
-        LinkedList<Intersectable> l3 = new LinkedList<Intersectable>();
-        l3.add(planeInter);
-        l3.add(sphereInter);
-        l3.add(sphereNoInter);
-        l3.add(triangleNoInter);
-        Geometries g3 = new Geometries(l3);
+        Geometries g3 = new Geometries(planeInter, sphereInter, sphereNoInter, triangleNoInter);
         assertEquals(3,g3.findIntersections(ray).size(), "Some geometries intersect failure");
 
         //TC04: All the geometries have intersections with the ray
-        LinkedList<Intersectable> l4 = new LinkedList<Intersectable>();
-        l4.add(planeInter);
-        l4.add(sphereInter);
-        l4.add(triangleInter);
-        Geometries g4 = new Geometries(l4);
+        Geometries g4 = new Geometries(planeInter, sphereInter, triangleInter);
         assertEquals(4,g4.findIntersections(ray).size(), "All geometries intersect failure");
     }
 }

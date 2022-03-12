@@ -1,18 +1,20 @@
 package geometries;
 
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Unit tests for geometries.Cylinder class
  * @author Nechama Eri-Barron and Chaya Yazersky
  */
 
 class CylinderTest {
-
+    /**
+     * Test method for {@link geometries.Cylinder#getNormal(Point)} ()}.
+     * This method checks the function getNormal that returns normal to point on cylinder
+     */
+    
     @Test
     void testGetNormal() {
         Ray centerLine = new Ray(new Point(0,0,0), new Vector(0,0,1));

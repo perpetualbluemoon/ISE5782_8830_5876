@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="junit">
+    <CLASSES>
+      <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="https://jar-download.com/dependency-project-download.php?download_key=8b7a9da8e9f42e7e733584f7c499a01f" />
+      <root url="https://jar-download.com/dependency-project.php?project_key=7e968718db9d1a15945180a7713abe27" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>

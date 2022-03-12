@@ -1,9 +1,9 @@
 package primitives;
+
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for primitives.Point class
@@ -14,6 +14,7 @@ class PointTest {
 
     /**
      * Test method for {@link primitives.Point#subtract(primitives.Point)}.
+     * This method checks the subtract function for Point
      */
     @Test
     void testSubtract() {
@@ -42,6 +43,7 @@ class PointTest {
 
     /**
      * Test method for {@link primitives.Point#add(primitives.Vector)}.
+     * This method checks add function (adding a vector to a point )
      */
     @Test
     void testAdd() {
@@ -60,6 +62,7 @@ class PointTest {
 
     /**
      * Test method for {@link primitives.Point#distanceSquared(primitives.Point)}.
+     * This method checks the distanceSquared function(distance between two points)
      */
     @Test
     void testDistanceSquared() {
@@ -74,6 +77,7 @@ class PointTest {
 
     /**
      * Test method for {@link primitives.Point#distance(primitives.Point)}.
+     * This method checks the distance function(distance between two points)
      */
     @Test
     void testDistance() {
