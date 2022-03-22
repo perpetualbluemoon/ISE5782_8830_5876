@@ -1,8 +1,6 @@
 package geometries;
 
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import static primitives.Util.isZero;
 
@@ -13,7 +11,7 @@ import static primitives.Util.isZero;
 
 public class Cylinder extends Tube{
     double height;
-
+    //constructor
     public Cylinder(Ray axisRay, double radius, double height) {
         super(axisRay, radius);
         this.height = height;
