@@ -6,19 +6,17 @@ package renderer;
 
 import geometries.*;
 import org.junit.jupiter.api.Test;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /***
- * test method for constructRay
+ * test method for constructRay function
  */
 public class testCameraRayIntersectionsIntegration {
-
+//non specific function that checks the every call on the same view point for DRY rule
     private void assertCountIntersections(Camera cam, Intersectable geo, int expected) {
         cam.setVPSize(3,3);
         //distance set to one for ease of calculation
@@ -26,15 +24,21 @@ public class testCameraRayIntersectionsIntegration {
         int countIntersections = 0;
         final int width = 3;//nX
         final int height = 3;//nY
+        //check on every row and in each row for every different pixel according to column
         for(int i=0;i< height;i++){
             for(int j=0;j< width;j++){
+                //create ray going from center of camera through center of pixel
                 Ray camToVPRay=cam.constructRay(width,height,j,i);
+                //create list of points of intersections the ray has with all objects in geo
                  List<Point>  intersectionsList=geo.findIntersections(camToVPRay);
                  if(intersectionsList!=null) {
+                     //if the list is not empty add number of points found to sum of points
                      countIntersections += intersectionsList.size();
                  }
             }
         }
+        //we assume the returned points are the right points, relying on previous checks
+        //if sum is not the expected the test failed
         assertEquals(expected, countIntersections, "Wrong number of intersections");
     }
 
@@ -44,7 +48,7 @@ public class testCameraRayIntersectionsIntegration {
     @Test
     //There is a plane
     public void cameraRayPlaneIntegration() {
-
+        //create camera and zero point
         final Point ZERO_POINT = new Point(0, 0, 0);
         Camera camera = new Camera(ZERO_POINT, new Vector(0, 0, -1),
                 new Vector(0, -1, 0)).setVPDistance(1);
@@ -67,9 +71,12 @@ public class testCameraRayIntersectionsIntegration {
         Plane plane3 = new Plane(new Point(1, 0, -2), new Point(0, 0, -2), new Point(0, 2, -1), new Point(0, 0, -2) );
         assertCountIntersections(camera, plane3, 9);
     }
-
+    /**
+     * Integration tests of Camera Ray construction with Ray-triangle intersections
+     */
     //There is a triangle
     public void cameraRayTriangleIntegration(){
+        //create camera and zero point
         final Point ZERO_POINT = new Point(0, 0, 0);
         Camera camera = new Camera(ZERO_POINT, new Vector(0, 0, -1),
                 new Vector(0, -1, 0)).setVPDistance(1);
@@ -82,7 +89,9 @@ public class testCameraRayIntersectionsIntegration {
         Triangle triangle1 = new Triangle(new Point(100, -100, -2),new Point(100, 100, -2),new Point(-100, 0, -2));
         assertCountIntersections(camera, triangle1, 9);
     }
-
+    /**
+     * Integration tests of Camera Ray construction with Ray-Sphere intersections
+     */
     //There is sphere
     public void cameraRaySphereIntegration(){
         final Point ZERO_POINT = new Point(0, 0, 0);
