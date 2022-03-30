@@ -2,17 +2,30 @@
 package renderer;
 
 import primitives.*;
+
+import java.util.MissingResourceException;
+
 /***
  * class of camera helps constructing rays through view plane pixels and find intersections
  */
 public class Camera {
+
+    //coordinates of the camera
     private Vector _Vright;//y
     private Vector _Vup;//x
     private Vector _Vto;//z
     private Point _centerCam;
+
+    //information about the view plane
     private double  _heightVP;
     private double _widthVP;
     private double _distanceVPToCam;
+
+    //information about creation of the final image
+    private ImageWriter _imageWriter; //creates the photo
+    private RayTracerBase _rayTracerBase;
+
+
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
     public Camera( Point centerCam,Vector vto, Vector vup) {
         _Vup = vup.normalize();
@@ -31,24 +44,47 @@ public class Camera {
         _Vright=crossP.normalize();
         _centerCam = centerCam;
     }
-    /*function setter
-    *@param double distanceVPToCam for distance of view plane from camera
-     @returns current object*/
+
+    //setters
+    /***function setter
+    *@param distanceVPToCam for distance of view plane from camera
+     @returns current object - camera
+     */
     public Camera setVPDistance(double distanceVPToCam) {
         _distanceVPToCam = distanceVPToCam;
         return this;
     }
-    /*
+    /***
     function setter
-    @param double width-width for size of view plane
-    @param double height -height for size of view plane
-    @returns current object
+    @param width-width for size of view plane
+    @param height -height for size of view plane
+    @returns current object - camera
      */
     public Camera setVPSize(double width, double height){
         _widthVP=width;
         _heightVP=height;
         return this;
     }
+    /***
+     * set image writer
+     * @param imageWriter creates the photo
+     * @return the camera
+     */
+    public Camera setImageWriter(ImageWriter imageWriter) {
+        _imageWriter=imageWriter;
+        return this;
+    }
+
+    /***
+     * set ray tracer
+     * @param rayTracerBase finds color
+     * @return the camera
+     */
+    public Camera setRayTracerBase(RayTracerBase rayTracerBase) {
+        _rayTracerBase = rayTracerBase;
+        return this;
+    }
+
     //getters
     public Vector getVright() {
         return _Vright;
@@ -121,5 +157,67 @@ public class Camera {
         //𝒗𝒊,𝒋 = 𝑷𝒊,𝒋 − 𝑷0
         Ray rayReturn=new Ray(_centerCam,Vij);
         return rayReturn;
+    }
+
+    /***
+     * function render Image checks that all the fields are initialized
+     */
+    public void renderImage(){
+        //coordinates of the camera are not null
+        if((_Vright==null)||(_Vup == null)||(_Vto==null)||(_centerCam==null))
+            throw new MissingResourceException("Camera coordinates are not initialized","Camera","coordinates");
+
+        //information about the view plane does not need to be checked because double cannot be null
+
+        //information about creation of the final image
+        if((_imageWriter==null)||(_rayTracerBase == null))
+            throw new MissingResourceException("Image creation details are not initialized","Camera","Writer details");
+
+        //for every row
+        for (int i = 0; i < _imageWriter.getNy(); i++) {
+            //for every column
+            for (int j = 0; j <_imageWriter.getNx() ; j++) {
+                Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+                Color thisPixelColor = _rayTracerBase.traceRay(thisPixelRay);
+
+                _imageWriter.writePixel(j,i,thisPixelColor);
+                }
+            }
+    }
+
+    /***
+     * function printGrid places a grid
+     * @param interval size of the squares in the grid
+     * @param color color of the grid
+     */
+    public void printGrid(int interval, Color color){
+        if(_imageWriter==null)
+            throw new MissingResourceException("Image creation details are not initialized","Camera","Writer details");
+        //for every row
+        for (int i = 0; i < _imageWriter.getNx(); i++) {
+            //for every column
+            for (int j = 0; j < _imageWriter.getNy(); j++) {
+                //grid: 800/50 = 16, 500/50 = 10
+                if((i%interval ==0) || (j % interval ==0)){
+                    _imageWriter.writePixel(i,j, color);
+                }
+            }
+        }
+    }
+
+    /***
+     * function checks the parameters and then calls function from class ImageWriter to create the image
+     */
+    public void writeToImage(){
+        //checks that the image writer field has been initialized
+        if(_imageWriter==null)
+            throw new MissingResourceException("Image creation details are not initialized","Camera","Writer details");
+        //calls writer function from class ImageWriter in renderer
+        _imageWriter.writeToImage();
+    }
+
+    public Camera setRayTracer(RayTracerBasic rayTracerBasic) {
+        _rayTracerBase = rayTracerBasic;
+        return this;
     }
 }

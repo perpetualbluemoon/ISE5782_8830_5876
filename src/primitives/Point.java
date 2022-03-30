@@ -8,6 +8,7 @@ import java.util.Objects;
  */
 
 public class Point {
+    public static final Point ZERO = new Point(0,0,0);
     final Double3 _xyz;
 
     public Point(double d1, double d2, double d3)
