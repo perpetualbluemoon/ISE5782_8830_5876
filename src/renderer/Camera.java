@@ -122,4 +122,8 @@ public class Camera {
         Ray rayReturn=new Ray(_centerCam,Vij);
         return rayReturn;
     }
+
+    public Camera setImageWriter(ImageWriter base_render_test) {
+    return null;
+    }
 }
