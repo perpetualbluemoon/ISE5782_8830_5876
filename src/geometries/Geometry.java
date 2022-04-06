@@ -1,17 +1,33 @@
 package geometries;
 
+import primitives.Color;
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
+
+import java.util.List;
 
 /***
  * Geometry is an interface for interacting with basic geometric shapes
  * */
 
-public interface Geometry extends Intersectable{
+public abstract class Geometry extends Intersectable {
+
+    protected Color _emission = Color.BLACK;
+
+    public Color getEmission() {
+        return _emission;
+    }
+
+    public Geometry setEmission(Color emission) {
+        _emission = emission;
+        return this;
+    }
+
     /***
      *
      * @param point
-     * @return returns a orthogonal normalized vector
+     * @return returns an orthogonal normalized vector
      */
-    Vector getNormal(Point point);
+    public abstract Vector getNormal(Point point);
 }

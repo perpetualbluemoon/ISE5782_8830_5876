@@ -1,32 +1,42 @@
 package renderer;
 
+import geometries.Intersectable;
+import geometries.Intersectable.GeoPoint;
+import lighting.AmbientLight;
 import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import scene.Scene;
 
+
 import java.util.LinkedList;
 
+import static java.lang.System.out;
 
-public class RayTracerBasic extends RayTracerBase{
 
-    public RayTracerBasic(Scene scene){
+public class RayTracerBasic extends RayTracerBase {
+
+    public RayTracerBasic(Scene scene) {
         super(scene);
     }
 
     @Override
     public Color traceRay(Ray ray) {
-       LinkedList<Point> listPointsIntersections = (LinkedList<Point>) _scene._geometries.findIntersections(ray);
-       if(listPointsIntersections ==null || listPointsIntersections.isEmpty()){
-           return _scene._background;//.add(_scene._ambientLight.getIntensity());
-       }
-       Point closestPoint = ray.findClosestPoint(listPointsIntersections);
-       Color thisPixelColor = calcColor(closestPoint);
+        LinkedList<GeoPoint> listPointsIntersections = (LinkedList<GeoPoint>) _scene._geometries.findGeoIntersectionsHelper(ray);
+        if (listPointsIntersections == null || listPointsIntersections.isEmpty()) {
+            return _scene._background;//.add(_scene._ambientLight.getIntensity());
+        }
+
+        GeoPoint closestPoint = ray.findClosestGeoPoint(listPointsIntersections);
+        //out.print(closestPoint);
+        Color thisPixelColor = calcColor(closestPoint);
         return thisPixelColor;
     }
 
-    public Color calcColor(Point closestPoint){
-        Color pointColor = new Color (java.awt.Color.PINK);
+    public Color calcColor(GeoPoint closestPoint) {
+
+        Color pointColor = closestPoint._geoPointGeometry.getEmission();
+        pointColor = pointColor.add(_scene._ambientLight.getIntensity());
         return pointColor;
     }
 
