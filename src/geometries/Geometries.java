@@ -4,25 +4,31 @@ import primitives.Point;
 import primitives.Ray;
 
 import java.util.*;
+
+import static java.lang.System.out;
+
 /***
  * Class Geometries implements intersectable and represents a list of intersectables in order to
  * do functions on group of shapes
  */
 
-public class Geometries implements Intersectable{
+public class Geometries extends Intersectable {
 
     LinkedList<Intersectable> _geometries;
-//constructor recieves nothing and creates empty list
+
+    //constructor recieves nothing and creates empty list
     public Geometries() {
         _geometries = new LinkedList<>();
     }
-//constructor recieves group of intersectables and creates list out of them
+
+    //constructor recieves group of intersectables and creates list out of them
     public Geometries(Intersectable... geometries) {
         _geometries = new LinkedList<>();
         Collections.addAll(_geometries, geometries);
     }
+
     //add function recieves group of intersectables and adds them to list
-    public void add(Intersectable... geometries){
+    public void add(Intersectable... geometries) {
         Collections.addAll(_geometries, geometries);
     }
 
@@ -30,7 +36,12 @@ public class Geometries implements Intersectable{
     public LinkedList<Intersectable> getGeometries() {
         return _geometries;
     }
-//function finds intersections of all shapes in list with a given ray
+
+    /***
+     *
+     * @param ray to check for intersections
+     * @return list of points that intersect the shapes
+     */
     @Override
     public List<Point> findIntersections(Ray ray) {
         List<Point> intersectionsWithAllShapes = null;
@@ -41,13 +52,41 @@ public class Geometries implements Intersectable{
             //if there are(!) intersections with the specific item
             if (itemList != null) {
                 //if the list of intersections with everyone is null, then create a new list
-                if(intersectionsWithAllShapes == null){
+                if (intersectionsWithAllShapes == null) {
                     intersectionsWithAllShapes = new LinkedList<>();
                 }
                 //(if there are intersections with item) add list of intersections with item to list of all intersections
                 intersectionsWithAllShapes.addAll(itemList);
             }
         }
+        return intersectionsWithAllShapes;
+    }
+
+    /***
+     *
+     * @param ray the ray to check for intersections
+     * @return list of geoPoint intersections
+     */
+    @Override
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        List<GeoPoint> intersectionsWithAllShapes = null;
+
+        //for each item in the list add the intersections to the list of intersections
+        for (var item : _geometries) {
+            var itemList = item.findGeoIntersectionsHelper(ray);
+            //out.print(itemList);
+            //out.print("\n");
+            //if there are(!) intersections with the specific item
+            if (itemList != null) {
+                //if the list of intersections with everyone is null, then create a new list
+                if (intersectionsWithAllShapes == null) {
+                    intersectionsWithAllShapes = new LinkedList<GeoPoint>();
+                }
+                //(if there are intersections with item) add list of intersections with item to list of all intersections
+                intersectionsWithAllShapes.addAll(itemList);
+            }
+        }
+
         return intersectionsWithAllShapes;
     }
 }

@@ -1,5 +1,6 @@
 package geometries;
 
+import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
@@ -10,13 +11,14 @@ import static java.lang.System.out;
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
-public class Triangle extends Polygon{
+public class Triangle extends Polygon {
+
     /***
      * if all three points are in a line
      * @param p1, p2, p3 - points to build the triangle
      */
     public Triangle(Point p1, Point p2, Point p3) {
-        super(p1,p2,p3);
+        super(p1, p2, p3);
     }
 
     @Override
@@ -27,14 +29,18 @@ public class Triangle extends Polygon{
                 '}';
     }
 
+    /***
+     *
+     * @param ray to find intersections
+     * @return GeoPoint list of intersections
+     */
     @Override
-    public List<Point> findIntersections(Ray ray) {
-       List<Point> intersections = plane.findIntersections(ray);
-       // List<Point> intersections=List.of(new Point(0.8,0.8,0));
-        if(intersections == null){
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        List<GeoPoint> intersections = plane.findGeoIntersectionsHelper(ray);
+        if (intersections == null) {
             return null;
         }
-         Point p0 = ray.getP0();
+        Point p0 = ray.getP0();
         Vector v = ray.getDir().normalize();
 
         Vector v1 = vertices.get(0).subtract(p0);
@@ -42,26 +48,28 @@ public class Triangle extends Polygon{
         Vector v3 = vertices.get(2).subtract(p0);
 
         double s1 = alignZero(v.dotProduct(v1.crossProduct(v2).normalize()));
-        if (isZero(s1)){
+        if (isZero(s1)) {
             return null;
         }
         double s2 = alignZero(v.dotProduct(v2.crossProduct(v3).normalize()));
-        if (isZero(s2)){
+        if (isZero(s2)) {
             return null;
         }
         double s3 = alignZero(v.dotProduct(v3.crossProduct(v1).normalize()));
-        if (isZero(s3)){
+        if (isZero(s3)) {
             return null;
         }
-        if(s1*s2 <= 0){
+        if (s1 * s2 <= 0) {
             return null;
         }
 
-        if(s1*s3 <= 0)
-        {
+        if (s1 * s3 <= 0) {
             return null;
         }
-        //the list we got from super is valid, return the list
+        //the list we got from super is valid, change the field of geoPointGeometry to this and then return the list
+        for (var item : intersections) {
+            item._geoPointGeometry = this;
+        }
         return intersections;
     }
 }

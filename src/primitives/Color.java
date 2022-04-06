@@ -23,6 +23,9 @@ public class Color {
     public static final Color BLUE = new Color(0,0,255d);
     public static final Color YELLOW = new Color(java.awt.Color.YELLOW);
     public static final Color RED = new Color(java.awt.Color.RED);
+    public static final Color GREEN = new Color(java.awt.Color.GREEN);
+
+
     /**
      * Default constructor - to generate Black Color (privately)
      */
@@ -98,15 +101,39 @@ public class Color {
     }
 
     /**
-     * Scale the color by a scalar
+     * Scale the color by a scalar triad per rgb
      *
-     * @param k scale factor
+     * @param k scale factor per rgb
      * @return new Color object which is the result of the operation
      */
     public Color scale(Double3 k) {
         if (k.d1 < 0.0 || k.d2 < 0.0 || k.d3 < 0.0)
             throw new IllegalArgumentException("Can't scale a color by a negative number");
         return new Color(rgb.product(k));
+    }
+
+    /**
+     * Scale the color by a scalar
+     *
+     * @param k scale factor
+     * @return new Color object which is the result of the operation
+     */
+    public Color scale(double k) {
+        if (k < 0.0)
+            throw new IllegalArgumentException("Can't scale a color by a negative number");
+        return new Color(rgb.scale(k));
+    }
+
+    /**
+     * Scale the color by (1 / reduction factor)
+     *
+     * @param k reduction factor
+     * @return new Color object which is the result of the operation
+     */
+    public Color reduce(double k) {
+        if (k < 1)
+            throw new IllegalArgumentException("Can't scale a color by a by a number lower than 1");
+        return new Color(rgb.reduce(k));
     }
 
     /**
@@ -121,4 +148,10 @@ public class Color {
         return new Color(rgb.d1 / k.d1, rgb.d2 / k.d2, rgb.d3 / k.d3);
     }
 
+    @Override
+    public String toString() {
+        return "Color{" +
+                "rgb=" + rgb.toString() +
+                '}';
+    }
 }
