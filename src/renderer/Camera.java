@@ -164,7 +164,8 @@ public class Camera {
     /***
      * function render Image checks that all the fields are initialized
      */
-    public void renderImage() {
+    //???????????????????????/ check that return this works
+    public Camera renderImage() {
         //coordinates of the camera are not null
         if ((_Vright == null) || (_Vup == null) || (_Vto == null) || (_centerCam == null))
             throw new MissingResourceException("Camera coordinates are not initialized", "Camera", "coordinates");
@@ -183,6 +184,7 @@ public class Camera {
                 _imageWriter.writePixel(j, i, thisPixelColor);
             }
         }
+        return this;
     }
 
     /***
