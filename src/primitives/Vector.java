@@ -117,4 +117,14 @@ public class Vector extends Point{
                 _xyz.d3/size
         );
     }
+
+    /***
+     * assistant function which creates vector r to help frequently used calculations
+     * @param n vector
+     * @return vector r
+     */
+    public Vector createR(Vector n){
+        Vector r = this.subtract(n.scale(2*this.dotProduct(n)));
+        return r.normalize();
+    }
 }

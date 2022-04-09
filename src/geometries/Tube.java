@@ -10,7 +10,7 @@ import static primitives.Util.isZero;
  * Class Tube represents an infinite cylinder using a vector axis and a radius
  */
 
-public class Tube implements Geometry {
+public class Tube extends Geometry {
     Ray axisRay;    //central ray of the tube
     double radius;  //the radius of the tube
 
@@ -65,7 +65,7 @@ public class Tube implements Geometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         return null;
     }
 }

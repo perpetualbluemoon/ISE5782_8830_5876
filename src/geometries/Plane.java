@@ -4,6 +4,7 @@ import primitives.*;
 
 import java.util.List;
 
+import static java.lang.System.out;
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
@@ -11,15 +12,17 @@ import static primitives.Util.isZero;
  * Plane class represents a 2D plane with cartesian coordinates
  */
 
-public class Plane implements Geometry {
+public class Plane extends Geometry {
     final Point _g0;
     final Vector _normal;
+
 
     public Plane(Point g0, Vector normal) {
         _g0 = g0;
         _normal = normal.normalize();
     }
-    public Plane(Point p1, Point p2, Point p3, Point g0){
+
+    public Plane(Point p1, Point p2, Point p3, Point g0) {
         _g0 = p1;
         //find first vector
         Vector U = p2.subtract(p1);
@@ -37,7 +40,8 @@ public class Plane implements Geometry {
     @Override
     public String toString() {
         return "Plane{" +
-                "_g0=" + _g0 +
+                "_emission=" + _emission +
+                ", _g0=" + _g0 +
                 ", _normal=" + _normal +
                 '}';
     }
@@ -52,28 +56,34 @@ public class Plane implements Geometry {
     }
 
     //we added .normalize() and then it worked but the normal should be normalized already
-    public Vector getNormal(){
+    public Vector getNormal() {
         return _normal.normalize();
     }
 
+    /***
+     *
+     * @param ray to find intersections with
+     * @return list of GeoPoint intersections with the objects in the scene
+     */
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         //don't allow p0 == g0
-        if(ray.getP0().equals(_g0)){
+        if (ray.getP0().equals(_g0)) {
             return null;
         }
         Vector n = getNormal();
         double nv = n.dotProduct(ray.getDir());
         //vectors are parallel and don't have any intersections
-        if(isZero(nv)){
+        if (isZero(nv)) {
             return null;
         }
-        double t = alignZero((_g0.subtract(ray.getP0()).dotProduct(n))/nv);
+        double t = alignZero((_g0.subtract(ray.getP0()).dotProduct(n)) / nv);
         // t!=0 because the point is not on the plane
-        if(t<0) {
+        if (t < 0) {
             return null;
         }
-        return List.of(ray.getPoint(t));
+        List<GeoPoint> p = List.of(new GeoPoint(this, ray.getPoint(t)));
+        return p;
     }
 }
 
