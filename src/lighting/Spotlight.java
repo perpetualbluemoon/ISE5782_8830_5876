@@ -30,8 +30,8 @@ public class Spotlight extends PointLight {
      */
     @Override
     public Color getIntensity(Point p) {
-        Vector l = getL(p);
+        Vector l = getL(p); //vector from light to point p
         double max = Math.max(0, _direction.normalize().dotProduct(l));
-        return super.getIntensity(p).scale(max);
+        return super.getIntensity(p).scale(max); //uses parent function to implement DRY
     }
 }

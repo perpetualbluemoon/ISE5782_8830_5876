@@ -27,10 +27,10 @@ public class LightsTests {
 
     private Point[] p = { // The Triangles' vertices:
             new Point(-110, -110, -150), // the shared left-bottom
-            new Point(80, 100, -150), // the shared right-top
+            new Point(95, 100, -150), // the shared right-top
             new Point(110, -110, -150), // the right-bottom
-            new Point(-75, 85, 0) }; // the left-top
-    private Point trPL = new Point(50, 30, -100); // Triangles test Position of Light
+            new Point(-75, 78, 100) }; // the left-top
+    private Point trPL = new Point(30, 10, -100); // Triangles test Position of Light
     private Point spPL = new Point(-50, -50, 25); // Sphere test Position of Light
     private Color trCL = new Color(800, 500, 250); // Triangles test Color of Light
     private Color spCL = new Color(800, 500, 0); // Sphere test Color of Light
@@ -63,7 +63,7 @@ public class LightsTests {
     @Test
     public void spherePoint() {
         scene1._geometries.add(sphere);
-        scene1._lights.add(new PointLight(spCL, spPL).setkL(0.001).setkL(0.0002));
+        scene1._lights.add(new PointLight(spCL, spPL).setkL(0.001).setkQ(0.0002));
 
         ImageWriter imageWriter = new ImageWriter("lightSpherePoint", 500, 500);
         camera1.setImageWriter(imageWriter) //
@@ -131,6 +131,38 @@ public class LightsTests {
                 .renderImage() //
                 .writeToImage(); //
     }
+
+    /**
+     * Produce a picture of a sphere lighted by a narrow spot light
+     */
+    @Test
+    public void sphereSpotSharp() {
+        scene1._geometries.add(sphere);
+        scene1._lights
+                .add(new Spotlight(spCL, spPL, new Vector(1, 1, -0.5)).setkL(0.001).setkQ(0.00004));
+
+        ImageWriter imageWriter = new ImageWriter("lightSphereSpotSharp", 500, 500);
+        camera1.setImageWriter(imageWriter) //
+                .setRayTracer(new RayTracerBasic(scene1)) //
+                .renderImage() //
+                .writeToImage(); //
+    }
+
+    /**
+     * Produce a picture of a two triangles lighted by a narrow spot light
+     */
+    @Test
+    public void trianglesSpotSharp() {
+        scene2._geometries.add(triangle1, triangle2);
+        scene2._lights.add(new Spotlight(trCL, trPL, trDL).setkL(0.001).setkQ(0.00004));
+
+        ImageWriter imageWriter = new ImageWriter("lightTrianglesSpotSharp", 500, 500);
+        camera2.setImageWriter(imageWriter) //
+                .setRayTracer(new RayTracerBasic(scene2)) //
+                .renderImage() //
+                .writeToImage(); //
+    }
+
 
     /**
      * This method tests the two triangles with multiple lights
