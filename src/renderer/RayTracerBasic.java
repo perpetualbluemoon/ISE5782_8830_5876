@@ -43,6 +43,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @return color of the light
      */
     private Color calcDiffusive(double kD, Vector l, Vector n, Color lightIntensity) {
+        //according to the phong model
        double calcD = kD * Math.abs(l.dotProduct(n));
        return lightIntensity.scale(calcD);
     }
@@ -52,6 +53,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @return color of the light
      */
     private Color calcSpecular(double kS, Vector l, Vector n, Vector v, int nShininess, Color lightIntensity) {
+        //according to the phong model
         Vector r = l.createR(n);
         double x=v.scale(-1).dotProduct(r);
         double max=Math.max(0,x);
@@ -59,6 +61,12 @@ public class RayTracerBasic extends RayTracerBase {
         return lightIntensity.scale(calcS);
     }
 
+    /***
+     * Mathematical calculations according to the slides from the fist semester
+     * @param intersection the point for which we want the color
+     * @param ray ray from the camera
+     * @return the color of the point
+     */
     private Color calcLocalEffectsSimple(GeoPoint intersection, Ray ray) {
         Vector v = ray.getDir().normalize();
         Vector n = intersection._geoPointGeometry.getNormal(intersection._geoPoint).normalize();
@@ -94,10 +102,19 @@ public class RayTracerBasic extends RayTracerBase {
         return color;
     }
 
+    /***
+     *
+     * @param closestPoint the point that we want to find the color of
+     * @param ray the ray from the camera through a pixel
+     * @return the color for that point
+     */
     public Color calcColor(GeoPoint closestPoint, Ray ray) {
 
+        //basic color
         Color pointColor = closestPoint._geoPointGeometry.getEmission();
+        //adding the ambient lighting
         pointColor = pointColor.add(_scene._ambientLight.getIntensity());
+        //adding the local effects according to the phong model
         pointColor = pointColor.add(calcLocalEffectsSimple(closestPoint, ray));
 
         return pointColor;

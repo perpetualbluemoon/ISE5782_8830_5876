@@ -44,14 +44,23 @@ public class PointLight extends Light implements LightSource {
         return this;
     }
 
+    /***
+     * this function returns the intensity of the light calculated based on a given point
+     * @param p point on the object
+     * @return the Color of the point with respect to environmental impact
+     */
     @Override
     public Color getIntensity(Point p) {
-        double d = _position.distance(p);
-        double dim = _kC + _kL*d + _kQ*Math.pow(d,2);
-        dim = 1.0/dim;
+        double dim = _kC + _kL * p.distance(_position) + _kQ * p.distanceSquared(_position);
+        dim = 1.0 / dim;
         return super._intensity.scale(dim);
     }
 
+    /***
+     * this function calculates the vector between the light source and the point on the object
+     * @param p the point
+     * @return the vector
+     */
     @Override
     public Vector getL(Point p) {
         return p.subtract(_position).normalize();

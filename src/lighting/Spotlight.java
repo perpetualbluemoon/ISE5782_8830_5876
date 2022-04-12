@@ -21,11 +21,17 @@ public class Spotlight extends PointLight {
         _direction = direction;
     }
 
+    /***
+     * this function calculates the color
+     * get light according to mathematical calculations
+     *  𝑰𝑳 =point *max(0,l*dir)
+     * @param p point on the object
+     * @return the color for that point
+     */
     @Override
     public Color getIntensity(Point p) {
-        Vector l = p.subtract(_position).normalize();
+        Vector l = getL(p);
         double max = Math.max(0, _direction.normalize().dotProduct(l));
-        super.getIntensity(p).scale(max);
         return super.getIntensity(p).scale(max);
     }
 }
