@@ -42,62 +42,61 @@ public class RayTracerBasic extends RayTracerBase {
      * Method which calculates the effects of deffusive light
      * @return color of the light
      */
-    private Color calcDiffusive(double kD, Vector l, Vector n, Color lightIntensity) {
-       double calcD = kD * Math.abs(l.dotProduct(n));
-       return lightIntensity.scale(calcD);
+    private double calcDiffusive(double kD, double nl) {
+        //according to the phong model
+        double calcD = kD*Math.abs(nl);
+        return calcD;
     }
 
     /***
      * Method which calculates the effects of specular light
      * @return color of the light
      */
-    private Color calcSpecular(double kS, Vector l, Vector n, Vector v, int nShininess, Color lightIntensity) {
-        Vector r = l.createR(n);
-        double x=v.scale(-1).dotProduct(r);
-        double max=Math.max(0,x);
-        double calcS = kS * Math.pow(max, nShininess);
-        return lightIntensity.scale(calcS);
+    private double calcSpecular(double kS, Vector n, Vector l,  double nl, Vector v, double shininess) {
+        //according to the phong model
+        Vector r =  l.createR(n);
+        double max = Math.max(0, v.scale(-1).dotProduct(r));
+        double calcS = kS*Math.pow(max, shininess);
+        return calcS;
     }
 
+    /***
+     * Mathematical calculations according to the slides from the fist semester
+     * @param intersection the point for which we want the color
+     * @param ray ray from the camera
+     * @return the color of the point
+     */
     private Color calcLocalEffectsSimple(GeoPoint intersection, Ray ray) {
-        Vector v = ray.getDir().normalize();
-        Vector n = intersection._geoPointGeometry.getNormal(intersection._geoPoint).normalize();
-
-        //check if the angle is too wide
+        Color color = intersection._geoPointGeometry.getEmission();
+        Vector v = ray.getDir();
+        Vector n = intersection._geoPointGeometry.getNormal(intersection._geoPoint);
         double nv = alignZero(n.dotProduct(v));
-        if (isZero(nv)) {
-            return Color.BLACK;
-        }
-
-        int nShininess = intersection._geoPointGeometry.getMaterial().nShininess;
-
-        //Double3 here has the same value in all 3 spots
-        double kD = intersection._geoPointGeometry.getMaterial()._kD.getD1();
-        double kS = intersection._geoPointGeometry.getMaterial()._kS.getD1();
-
-        Color color = Color.BLACK;
-
+        if (nv == 0) return color;
+        Material material = intersection._geoPointGeometry.getMaterial();
         for (LightSource lightSource : _scene._lights) {
-            Vector l = lightSource.getL(intersection._geoPoint).normalize();
+            Vector l = lightSource.getL(intersection._geoPoint);
             double nl = alignZero(n.dotProduct(l));
-
-
-            //if their signs are the same then it is blocking itself from the lgiht
-            if (nl * nv > 0) {
-                Color lightIntensity = lightSource.getIntensity(intersection._geoPoint);
-                Color defused = calcDiffusive(kD, l, n, lightIntensity);
-                color = color.add(defused);
-                Color specular = calcSpecular(kS, l, n, v, nShininess, lightIntensity);
-                color = color.add(specular);
+            if (nl * nv > 0) { // sign(nl) == sing(nv)
+                Color iL = lightSource.getIntensity(intersection._geoPoint);
+                color = color.add(iL.scale(calcDiffusive(material._kD.getD1(), nl)),
+                        iL.scale(calcSpecular(material._kS.getD1(), n, l, nl, v, material.nShininess)));
             }
         }
         return color;
+
     }
 
+    /***
+     *
+     * @param closestPoint the point that we want to find the color of
+     * @param ray the ray from the camera through a pixel
+     * @return the color for that point
+     */
     public Color calcColor(GeoPoint closestPoint, Ray ray) {
 
-        Color pointColor = closestPoint._geoPointGeometry.getEmission();
-        pointColor = pointColor.add(_scene._ambientLight.getIntensity());
+        //ambient light
+        Color pointColor = _scene._ambientLight.getIntensity();
+        //adding the local effects according to the phong model, including emissions
         pointColor = pointColor.add(calcLocalEffectsSimple(closestPoint, ray));
 
         return pointColor;
