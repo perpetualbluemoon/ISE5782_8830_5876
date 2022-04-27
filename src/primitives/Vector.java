@@ -120,6 +120,7 @@ public class Vector extends Point{
 
     /***
      * assistant function which creates vector r to help frequently used calculations
+     * used also in calculating refracted light
      * @param n vector
      * @return vector r
      */

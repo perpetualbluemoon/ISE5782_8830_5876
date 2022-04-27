@@ -121,9 +121,9 @@ public class RayTracerBasic extends RayTracerBase {
         //took a point adding epsilon in the direction of the normal
         Point rayHead;
         if(n.dotProduct(lightDirection)>0)
-            rayHead = gp._geoPoint.add(n.scale(EPSILON));
+            rayHead = movePoint(gp._geoPoint, n, EPSILON);
         else
-            rayHead = gp._geoPoint.add(n.scale(-EPSILON));
+            rayHead = movePoint(gp._geoPoint, n, -EPSILON);
         Ray lightRay = new Ray(rayHead, lightDirection);
         //checks for intersections between the point and the light
         List<GeoPoint> intersections = _scene._geometries.findGeoIntersections(lightRay);
@@ -139,4 +139,42 @@ public class RayTracerBasic extends RayTracerBase {
         }
         return true;
     }
+
+    /***
+     *
+     * @param p the point to move
+     * @param n normal vector to the point - the direction to move it in
+     * @param e epsilon or other number amount to move
+     * @return the moved point
+     */
+    public Point movePoint(Point p, Vector n, double e){
+        Vector scaled=n.scale(e);
+        Point pointPlus = p.add(scaled);
+        return pointPlus;
+    }
+
+    /***
+     *
+     * @param p point at the head of the ray for the reflection
+     * @param v the vector from the camera to the point
+     * @param n the normal vector from the point
+     * @return the reflected ray
+     */
+    public Ray calcReflectedRay(Point p, Vector v, Vector n){
+        Point movedPoint = movePoint(p,n,EPSILON);
+        return new Ray(movedPoint, v.createR(n));
+    }
+
+    /***
+     *
+     * @param p point at the head of the refracted ray
+     * @param v the vector from the camera to the point
+     * @param n the normal vector from the point
+     * @return the refracted ray
+     */
+    public Ray calcRefractedRay(Point p, Vector v, Vector n){
+        Point movedPoint = movePoint(p,n,EPSILON);
+        return new Ray(movedPoint, v);
+    }
+
 }
