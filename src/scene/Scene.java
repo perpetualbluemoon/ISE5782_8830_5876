@@ -4,6 +4,7 @@ import lighting.AmbientLight;
 import geometries.Geometries;
 import lighting.LightSource;
 import primitives.Color;
+import primitives.Double3;
 
 import java.util.LinkedList;
 
@@ -13,59 +14,63 @@ import java.util.LinkedList;
  */
 public class Scene {
 
+
     public String _name; //scene name
-    public Color _background = Color.BLACK; //background color
-    public AmbientLight _ambientLight = new AmbientLight(); //ambient light
+    public Color _background;  //background color
+    public AmbientLight _ambientLight;//ambient light
     public Geometries _geometries; // all the shapes in the scene
-    public LinkedList<LightSource> _lights = new LinkedList<>(); //all the light sources in the scene except for ambient light
+    public LinkedList<LightSource> _lights; //all the light sources in the scene except for ambient light
 
-    /***
-     * constructor with mandatory field name
-     * @param name name of the scene
-     */
-    public Scene(String name) {
-        _name = name;
-        _geometries = new Geometries();
+    private Scene(SceneBuilder built){
+        _name=built._name; //scene name
+        _background=built._background;  //background color
+        _ambientLight=built._ambientLight;//ambient light
+        _geometries=built._geometries; // all the shapes in the scene
+        _lights=built._lights;
+
     }
 
-    /***
-     * Setter using the pattern that is similar to builder which returns the current objects
-     * @param background the background color of the scene
-     * @return the scene
-     */
-    public Scene setBackground(Color background) {
-        _background = background;
-        return this;
+    //why is it static?????????????
+    public static class SceneBuilder{
+        public String _name;
+        public Color _background=Color.BLACK;  //background color
+        public AmbientLight _ambientLight=new AmbientLight(_background,new Double3(0));//ambient light
+        public Geometries _geometries=new Geometries(); // all the shapes in the scene
+        public LinkedList<LightSource> _lights=new LinkedList<>();
+
+        public SceneBuilder(String name) {
+            _name = name;
+        }
+
+        public SceneBuilder setName(String name) {
+            _name = name;
+            return this;
+        }
+
+        public SceneBuilder setBackground(Color background) {
+            _background = background;
+            return this;
+        }
+
+        public SceneBuilder setAmbientLight(AmbientLight ambientLight) {
+            _ambientLight = ambientLight;
+            return this;
+        }
+
+        public SceneBuilder setGeometries(Geometries geometries) {
+            _geometries = geometries;
+            return this;
+        }
+
+        public SceneBuilder setLights(LinkedList<LightSource> lights) {
+            _lights = lights;
+            return this;
+        }
+        public Scene build(){
+            return new Scene(this);
+        }
+
     }
 
-    /***
-     * Setter using the pattern that is similar to builder which returns the current objects
-     * @param ambientLight the ambient light sources in the scene
-     * @return the scene
-     */
-    public Scene setAmbientLight(AmbientLight ambientLight) {
-        _ambientLight = ambientLight;
-        return this;
-    }
-
-    /***
-     * Setter using the pattern that is similar to builder which returns the current objects
-     * @param geometries the list objectss in the scene
-     * @return the scene
-     */
-    public Scene setGeometries(Geometries geometries) {
-        _geometries = geometries;
-        return this;
-    }
-
-    /***
-     * Setter using the pattern that is similar to builder which returns the current objects
-     * @param lights the list of light sources in the scene
-     * @return the scene
-     */
-    public Scene setLights(LinkedList<LightSource> lights) {
-        _lights = lights;
-        return this;
-    }
 }
 

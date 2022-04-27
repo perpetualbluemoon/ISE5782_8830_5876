@@ -1,10 +1,17 @@
 package renderer;
 
+import static java.awt.Color.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import geometries.Intersectable;
+import geometries.Sphere;
+import geometries.Triangle;
+import lighting.AmbientLight;
+import lighting.Spotlight;
 import org.junit.jupiter.api.Test;
 
 import primitives.*;
+import scene.Scene;
 
 /**
  * Testing Camera Class
@@ -52,5 +59,7 @@ class CameraTest {
                 camera.setVPSize(8, 8).constructRay(4, 4, 1, 0), badRay);
 
     }
-
 }
+
+
+

@@ -91,4 +91,19 @@ public class Ray {
         GeoPoint closestPoint=findClosestGeoPoint(l);
         return closestPoint._geoPoint;
     }
+
+    /***
+     *
+     * @param p the point to move
+     * @param n normal vector to the point - the direction to move it in
+     * @param e epsilon or other number amount to move
+     * @return the moved point
+     */
+    public Ray(Point p, Vector n, double e, Vector lightDirection) {
+        Vector scaled = n.scale(e);
+        Point pointPlus = p.add(scaled);
+        p0 = pointPlus;
+        dir = lightDirection;
+
+    }
 }

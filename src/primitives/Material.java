@@ -7,13 +7,9 @@ public class Material {
     public int nShininess = 0;
 
 
-    public Double3 kT;  //transparency
-    public Double3 kR; //reflective - mirror
+    public Double3 kT = new Double3 (0.0);  //transparency
+    public Double3 kR = new Double3(0.0); //reflective - mirror
 
-    //max values to stop recursion of functions calling each other
-    //values were chosen according to the given instructions
-    private static final int MAX_CALC_COLOR_LEVEL = 10;
-    private static final double MIN_CALC_COLOR_K = 0.001;
 
     /***
      * setters in similar form to builder pattern - they return the current object
@@ -51,5 +47,13 @@ public class Material {
     public Material setkR(Double3 kR) {
         this.kR = kR;
         return this;
+    }
+
+    public Double3 getkD() {
+        return _kD;
+    }
+
+    public Double3 getkS() {
+        return _kS;
     }
 }

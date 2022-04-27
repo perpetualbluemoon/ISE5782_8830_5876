@@ -1,6 +1,9 @@
 package primitives;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import primitives.Point;
+import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,7 +35,7 @@ class PointTest {
 
         // ====== Equivalence Partition Tests ======
         //TC01: Result is positive
-        assertEquals(new Vector(1,3,2),p1.subtract(p2),"Vector subtraction with positive result failed");
+        Assertions.assertEquals(new Vector(1,3,2),p1.subtract(p2),"Vector subtraction with positive result failed");
 
         //TC02: Result is negative 
         assertEquals(new Vector(-1,-3,-2),p2.subtract(p1),"Vector subtraction with negative result failed");
