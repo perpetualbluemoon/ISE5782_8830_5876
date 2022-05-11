@@ -91,7 +91,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @param ray ray from the camera
      * @return the color of the point
      */
-    private Color calcLocalEffectsSimple(GeoPoint intersection, Ray ray, double k) {
+    private Color calcLocalEffects(GeoPoint intersection, Ray ray, double k) {
         Color color = intersection._geoPointGeometry.getEmission();//.scale(1 - intersection._geoPointGeometry.getMaterial().kT.getD1());
         Vector v = ray.getDir();
         Vector n = intersection._geoPointGeometry.getNormal(intersection._geoPoint);
@@ -102,11 +102,13 @@ public class RayTracerBasic extends RayTracerBase {
             Vector l = lightSource.getL(intersection._geoPoint);
             double nl = alignZero(n.dotProduct(l));
             if (nl * nv > 0) { // sign(nl) == sing(nv)
-                double ktr = transparency(intersection, l, n, lightSource);
-                if (ktr * k > MIN_CALC_COLOR_K) {
-                    Color iL = lightSource.getIntensity(intersection._geoPoint).scale(ktr);
-                    color = color.add(iL.scale(calcDiffusive(material.getkD().getD1(), nl)),
-                            iL.scale(calcSpecular(material.getkS().getD1(), n, l, nl, v, material.nShininess)));
+                //double ktr = transparency(intersection, l, n, lightSource);
+                if(unshaded(intersection, l, n, lightSource)){
+
+                //if (ktr * k > MIN_CALC_COLOR_K) {
+                    //Color iL = lightSource.getIntensity(intersection._geoPoint);//.scale(ktr);
+                    //color = color.add(iL.scale(calcDiffusive(material.getkD().getD1(), nl)),
+                            //iL.scale(calcSpecular(material.getkS().getD1(), n, l, nl, v, material.nShininess)));
                 }
             }
         }
@@ -178,7 +180,7 @@ public class RayTracerBasic extends RayTracerBase {
      * recursive function
      */
     public Color calcColor(GeoPoint closestPoint, Ray ray, int level, double k) {
-        Color color = calcLocalEffectsSimple(closestPoint, ray, k);
+        Color color = calcLocalEffects(closestPoint, ray, k);
         //adding the local effects according to the phong model, including emissions
         if (level == 1)
             return color;

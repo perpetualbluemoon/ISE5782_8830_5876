@@ -89,6 +89,7 @@ public class Sphere extends Geometry {
         }
         if (t2 > 0 /*&& alignZero(t2 - maxDistance) <= 0 */) {
 //            Point P2 = P0.add(v.scale(t2));
+            if(ray==util.)
             Point P2 =ray.getPoint(t2);
             return List.of(new GeoPoint(this,P2));
         }
