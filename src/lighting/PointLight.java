@@ -5,7 +5,7 @@ import primitives.Point;
 import primitives.Vector;
 
 /***
- * Point light is a type of light
+ * Point light is a type of light source that is from a certain point
  */
 public class PointLight extends Light implements LightSource {
     Point _position;
@@ -14,7 +14,6 @@ public class PointLight extends Light implements LightSource {
     double _kQ;
 
     /***
-     *
      * @param intensity intensity of the light
      * @param position position of the light in the 3D space
      */
