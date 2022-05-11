@@ -1,17 +1,14 @@
 package renderer;
+
 import geometries.Sphere;
 import geometries.Triangle;
 import lighting.AmbientLight;
 import lighting.Spotlight;
 import org.junit.jupiter.api.Test;
 import primitives.*;
-import renderer.Camera;
-import renderer.ImageWriter;
-import renderer.RayTracerBasic;
 import scene.Scene;
 
 import static java.awt.Color.*;
-import static java.awt.Color.BLUE;
 
 /**
  * Tests for reflection and transparency functionality, test for partial shadows
@@ -60,17 +57,27 @@ public class ReflectionRefractionTests {
                 .setAmbientLight(new AmbientLight(new Color(255, 255, 255), new Double3(0.1))).build();
 
         scene1._geometries.add( //
-                new Sphere(new Point(-950, -900, -1000), 400d).setEmission(new Color(0, 0, 100)) //
-                        .setMaterial(new Material().setkD(0.25).setkS(0.25).setShininess(20).setkT(new Double3(0.5))),
-                new Sphere(new Point(-950, -900, -1000), 200d).setEmission(new Color(100, 20, 20)) //
-                        .setMaterial(new Material().setkD(0.25).setkS(0.25).setShininess(20)),
+                new Sphere(new Point(-950, -900, -1000), 400d)
+                        .setEmission(new Color(0, 0, 100)) //
+                        .setMaterial(new Material()
+                                .setkD(0.25)
+                                .setkS(0.25)
+                                .setShininess(20)
+                                .setkT(0.5)),
+                new Sphere(new Point(-950, -900, -1000), 200d)
+                        .setEmission(new Color(100, 20, 20)) //
+                        .setMaterial(new Material()
+                                .setkD(0.25)
+                                .setkS(0.25)
+                                .setShininess(20)),
                 new Triangle(new Point(1500, -1500, -1500), new Point(-1500, 1500, -1500), new Point(670, 670, 3000)) //
                         .setEmission(new Color(20, 20, 20)) //
-                        .setMaterial(new Material().setkR(new Double3(1))),
+                        .setMaterial(new Material()
+                                .setkR(1)),
                 new Triangle(new Point(1500, -1500, -1500), new Point(-1500, 1500, -1500),
                         new Point(-1500, -1500, -2000)) //
                         .setEmission(new Color(20, 20, 20)) //
-                        .setMaterial(new Material().setkR(new Double3(0.5))));
+                        .setMaterial(new Material().setkR(0.5)));
 
         scene1._lights.add(new Spotlight(new Color(1020, 400, 400), new Point(-750, -750, -150), new Vector(-1, -1, -4)) //
                 .setkL(0.00001).setkQ(0.000005));

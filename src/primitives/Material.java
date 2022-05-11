@@ -2,8 +2,8 @@ package primitives;
 
 public class Material {
     //for local effects
-    public Double3 _kD = Double3.ZERO;
-    public Double3 _kS = Double3.ZERO;
+    private Double3 _kD = Double3.ZERO;
+    private Double3 _kS = Double3.ZERO;
     public int nShininess = 0;
 
 
@@ -55,5 +55,14 @@ public class Material {
 
     public Double3 getkS() {
         return _kS;
+    }
+
+    public Material setkT(double kt) {
+        this.kT = new Double3(kt);
+        return this;
+    }
+    public Material setkR(double kr) {
+        this.kR = new Double3(kr);
+        return this;
     }
 }
