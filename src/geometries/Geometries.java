@@ -89,4 +89,7 @@ public class Geometries extends Intersectable {
 
         return intersectionsWithAllShapes;
     }
+
+
+
 }
