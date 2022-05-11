@@ -25,13 +25,14 @@ public class Color {
     public static final Color RED = new Color(java.awt.Color.RED);
     public static final Color GREEN = new Color(java.awt.Color.GREEN);
     public static final Color SILVER = new Color(192,192,192);
-    public static final Color GOLD = new Color(255,215,0);
+    public static final Color GOLD = new Color(200,100,0);
     public static final Color MAGENTA = new Color(255,0,255);
     public static final Color ORANGE = new Color(255,127,80);
-    public static final Color BROWN = new Color(188,143,143);
+    public static final Color BROWN = new Color(155,103,60);
     public static final Color WHITE = new Color(255,255,255);
     public static final Color DARK_GRAY = new Color(105,105,105);
-
+    public static final Color LIGHT_BLUE = new Color(179,236,230);
+    public static final Color MINT_GREEN = new Color(144, 238, 144);
 
     /**
      * Default constructor - to generate Black Color (privately)

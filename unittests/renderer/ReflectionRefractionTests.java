@@ -111,4 +111,95 @@ public class ReflectionRefractionTests {
                 .renderImage() //
                 .writeToImage();
     }
+
+    /**
+     * our test
+     */
+    @Test
+    public void imageWithTenShapes() {
+        Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
+                .setVPSize(200, 200).setVPDistance(1000);
+
+
+        Scene scene2 = new Scene.SceneBuilder("Our test - shapes")
+                .setAmbientLight(new AmbientLight(Color.BROWN, new Double3(0.15))).setBackground(Color.BLACK).build();
+
+        Point p0 = new Point(0, -3, 5);
+        Point p1 = new Point(0, 3, 5);
+        Point p2 = new Point(0, 3, 0);
+        Point p3 = new Point(0, -3, 0);
+        Point p4 = new Point(9, 6, 5);
+        Point p5 = new Point(9, 6, 0);
+        Point p6 = new Point(9, -6, 0);
+        Point p7 = new Point(9, -6, 5);
+
+        Point p8 = new Point(1, 0, 0);
+        Point p9 = new Point(2, 1, 0);
+        Point p10 = new Point(3, 0, 0);
+        Point p11 = new Point(2, -1, 0);
+        Point p12 = new Point(1, 0, 2);
+        Point p13 = new Point(2, 1, 2);
+        Point p14 = new Point(3, 0, 2);
+        Point p15 = new Point(2, -1, 2);
+
+        Point p16 = new Point(0,-10,0.5);
+        Point p17 = new Point(0,10,0.5);
+        Point p18 = new Point(100, -10, 0.5);
+        Point p19 = new Point(100, 10, 0.5);
+
+
+        scene2._geometries.add(
+                //window
+                new Quadrangle(p0, p1, p2, p3).setTransparency(new Double3(0.7)).setColor(Color.LIGHT_BLUE),
+                //mirrors
+                new Quadrangle(p1, p2, p5, p4).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD),
+                new Quadrangle(p7, p0, p3, p6).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD),
+                //sun
+                new Sphere(new Point(-100, 0, 2), 2d)
+                        .setEmission(Color.RED)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //close to window
+                new Sphere(new Point(1, -0.75, 2), 0.5)
+                        .setEmission(Color.RED)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //close to camera bigger
+                new Sphere(new Point(60, 0.75, 1.1), 0.5)
+                        .setEmission(Color.GREEN)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(60, 0.75, 1.7), 0.2)
+                        .setEmission(Color.GREEN)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //close to camera smaller
+                new Sphere(new Point(59, 0, 1.1), 0.4)
+                        .setEmission(Color.BLUE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(59, 0, 1.6), 0.15)
+                        .setEmission(Color.BLUE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //floor
+                //new Quadrangle(p16, p17, p19, p18).setColor(Color.YELLOW)
+                new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
+                new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
+
+                //cube
+                // new Quadrangle(p8, p9, p10, p11),
+                //new Quadrangle(p12, p13, p14, p15),
+                //new Quadrangle(p13, p9, p10, p14),
+                //new Quadrangle(p14, p10, p11, p15),
+                //new Quadrangle(p15, p12, p8, p11),
+                //new Quadrangle(p12, p13, p9, p8)
+        );
+
+        scene2._lights.add(new Spotlight(new Color(700, 400, 400),
+                new Point(40, 40, 115),
+                new Vector(-1, -1, -4)));
+        scene2._lights.add(new PointLight(Color.BLUE, new Point(100, -100, 100)));
+        scene2._lights.add(new DirectionalLight(Color.MAGENTA,new Vector(-1,0,0)));
+
+        ImageWriter imageWriter = new ImageWriter("our test shapes", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2))
+                .renderImage()
+                .writeToImage();
+    }
 }

@@ -24,6 +24,7 @@ public class Ray {
      *
      * @param p the point to move
      * @param n normal vector to the point - the direction to move it in
+     * @param direction direction of the light
      * @return the moved point
      */
     public Ray(Point p, Vector n, Vector direction) {
