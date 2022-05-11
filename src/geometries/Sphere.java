@@ -7,21 +7,19 @@ import primitives.Vector;
 import java.util.List;
 
 import static java.lang.Math.sqrt;
-import static java.lang.System.out;
 import static primitives.Util.alignZero;
-import static primitives.Util.isZero;
 
 public class Sphere extends Geometry {
-    final Point p;
+    final Point center;
     double radius;
 
-    public Sphere(Point p, double radius) {
-        this.p = p;
+    public Sphere(Point center, double radius) {
+        this.center = center;
         this.radius = radius;
     }
 
-    public Point getP() {
-        return p;
+    public Point getCenter() {
+        return center;
     }
 
     public double getRadius() {
@@ -31,7 +29,7 @@ public class Sphere extends Geometry {
     @Override
     public String toString() {
         return "Sphere{" +
-                "p=" + p +
+                "p=" + center +
                 ", radius=" + radius +
                 '}';
     }
@@ -42,17 +40,68 @@ public class Sphere extends Geometry {
      */
     @Override
     public Vector getNormal(Point point) {
-        Vector normal = point.subtract(p);
+        Vector normal = point.subtract(center);
         return normal.normalize();
     }
 
+    @Override
+    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
+        Point P0 = ray.getP0();
+        Vector v = ray.getDir();
+
+        if (P0.equals(center)) {
+//            if(alignZero(radius - maxDistance) > 0){
+//                return null;
+//            }
+            return List.of(new GeoPoint(this, center.add(v.scale(radius))));
+        }
+
+        Vector U = center.subtract(P0);
+
+        double tm = alignZero(v.dotProduct(U));
+        double d = alignZero(Math.sqrt(U.lengthSquared() - tm * tm));
+
+        // no intersections : the ray direction is above the sphere
+        if (d >= radius) {
+            return null;
+        }
+
+        double th = alignZero(Math.sqrt(radius * radius - d * d));
+
+        double t1 = alignZero(tm - th);
+        double t2 = alignZero(tm + th);
+
+        if(t1 <=0 && t2 <= 0){
+            return null;
+        }
+
+        if (t1 > 0 && t2 > 0 /*&& alignZero(t1 - maxDistance) <= 0 && alignZero(t2 - maxDistance) <= 0*/) {
+//            Point P1 = P0.add(v.scale(t1));
+//            Point P2 = P0.add(v.scale(t2));
+            Point P1 =ray.getPoint(t1);
+            Point P2 =ray.getPoint(t2);
+            return List.of(new GeoPoint(this,P1), new GeoPoint(this,P2));
+        }
+        if (t1 > 0  /*&& alignZero(t1 - maxDistance) <= 0*/) {
+//            Point P1 = P0.add(v.scale(t1));
+            Point P1 =ray.getPoint(t1);
+            return List.of(new GeoPoint(this,P1));
+        }
+        if (t2 > 0 /*&& alignZero(t2 - maxDistance) <= 0 */) {
+//            Point P2 = P0.add(v.scale(t2));
+            if(ray==util.)
+            Point P2 =ray.getPoint(t2);
+            return List.of(new GeoPoint(this,P2));
+        }
+        return null;
+    }
     /**
      * Method for {@link geometries.Sphere#findGeoIntersectionsHelper(Ray)}.
      * This method finds intersections of a ray with a sphere and returns them in a list of GeoPoint
      */
-    @Override
-    public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
-        Point O = p;// center of the sphere
+    //@Override
+    public List<GeoPoint> findGeoIntersectionsHelperOriginal(Ray ray) {
+        Point O = center;// center of the sphere
 
         if (ray.getP0().equals(O)) {
             //if the ray starts from the center the vector is dir scaled by the radius

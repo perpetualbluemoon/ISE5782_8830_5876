@@ -1,23 +1,41 @@
 package primitives;
 
-import geometries.Intersectable;
+import geometries.Intersectable.GeoPoint;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import static java.lang.System.out;
+import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
-import geometries.Intersectable.GeoPoint;
-
 public class Ray {
+    private static final double DELTA = 0.1;
+
     private final Point p0;
     private final Vector dir;
 
     public Ray(Point p0, Vector dir) {
         this.p0 = p0;
         this.dir = dir.normalize();
+    }
+
+    /***
+     *
+     * @param p the point to move
+     * @param n normal vector to the point - the direction to move it in
+     * @return the moved point
+     */
+    public Ray(Point p, Vector n, Vector direction) {
+        Vector scaled;
+        double nv = alignZero(n.dotProduct(direction));
+         if (nv < 0) {
+            scaled = n.scale(-DELTA);
+        } else {
+            scaled = n.scale(DELTA);
+        }
+        p0 = p.add(scaled);
+        dir = direction.normalize();
     }
 
     public Point getP0() {
@@ -47,11 +65,8 @@ public class Ray {
     public Point getPoint(double t) {
         if (isZero(t))
             return p0;
-        return p0.add(dir.normalize().scale(t));
+        return p0.add(dir.scale(t));
     }
-
-
-
 
     public GeoPoint findClosestGeoPoint(LinkedList<GeoPoint> geoPointList) {
         //if the list is empty return null, there is no closest point
@@ -82,27 +97,13 @@ public class Ray {
      */
     public Point findClosestPoint(List<Point> pointList) {
         //if the list is empty return null, there is no closest point
-        if(pointList==null || pointList.isEmpty())
+        if (pointList == null || pointList.isEmpty())
             return null;
-        LinkedList<GeoPoint> l=new LinkedList<GeoPoint>();
-        for(var item:pointList){
-            l.add(new GeoPoint(null,item));
+        LinkedList<GeoPoint> l = new LinkedList<GeoPoint>();
+        for (var item : pointList) {
+            l.add(new GeoPoint(null, item));
         }
-        GeoPoint closestPoint=findClosestGeoPoint(l);
+        GeoPoint closestPoint = findClosestGeoPoint(l);
         return closestPoint._geoPoint;
-    }
-
-    /***
-     *
-     * @param p the point to move
-     * @param n normal vector to the point - the direction to move it in
-     * @param e epsilon or other number amount to move
-     * @return the moved point
-     */
-    public Ray(Point p, Vector n, double e, Vector lightDirection) {
-        Vector scaled = n.scale(e);
-        Point pointPlus = p.add(scaled);
-        p0 = pointPlus;
-        dir = lightDirection;
     }
 }

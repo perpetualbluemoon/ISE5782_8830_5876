@@ -51,7 +51,7 @@ public class Vector extends Point{
      * @return a new Vector which is scaled
      */
     public Vector scale(double s){
-        return new Vector(s*_xyz.d1,s*_xyz.d2,s*_xyz.d3);
+        return new Vector(_xyz.scale(s));
     }
 
     /**
@@ -116,16 +116,5 @@ public class Vector extends Point{
                 _xyz.d2/size,
                 _xyz.d3/size
         );
-    }
-
-    /***
-     * assistant function which creates vector r to help frequently used calculations
-     * used also in calculating refracted light
-     * @param n vector
-     * @return vector r
-     */
-    public Vector createR(Vector n){
-        Vector r = this.subtract(n.scale(2*this.dotProduct(n)));
-        return r.normalize();
     }
 }
