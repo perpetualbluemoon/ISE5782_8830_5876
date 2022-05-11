@@ -65,11 +65,17 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private double calcSpecular(double kS, Vector n, Vector l, double nl, Vector v, double shininess) {
         //according to the phong model
-        Vector r = l.createR(n);
+        Vector r = createR(l,n);
         double max = Math.max(0, v.scale(-1).dotProduct(r));
         double calcS = kS * Math.pow(max, shininess);
         return calcS;
     }
+
+    private Vector createR(Vector l, Vector n) {
+            Vector r = l.subtract(n.scale(2 * l.dotProduct(n)));
+            return r.normalize();
+
+        }
 
     /***
      * Mathematical calculations according to the slides from the fist semester
@@ -92,8 +98,8 @@ public class RayTracerBasic extends RayTracerBase {
                 double ktr = transparency(intersection, l, n, lightSource);
                 if (ktr*k > MIN_CALC_COLOR_K) {
                     Color iL = lightSource.getIntensity(intersection._geoPoint).scale(ktr);
-                    color = color.add(iL.scale(calcDiffusive(material._kD.getD1(), nl)),
-                            iL.scale(calcSpecular(material._kS.getD1(), n, l, nl, v, material.nShininess)));
+                    color = color.add(iL.scale(calcDiffusive(material.getkD().getD1(), nl)),
+                            iL.scale(calcSpecular(material.getkS().getD1(), n, l, nl, v, material.nShininess)));
                 }
             }
         }
@@ -200,9 +206,9 @@ public class RayTracerBasic extends RayTracerBase {
         //took a point adding epsilon in the direction of the normal
         Ray lightRay;
         if (n.dotProduct(lightDirection) > 0)
-            lightRay = new Ray(gp._geoPoint, n, EPSILON, lightDirection);
+            lightRay = new Ray(gp._geoPoint, n, lightDirection);
         else
-            lightRay = new Ray(gp._geoPoint, n, -EPSILON, lightDirection);
+            lightRay = new Ray(gp._geoPoint, n, lightDirection);
         //checks for intersections between the point and the light
         List<GeoPoint> intersections = _scene._geometries.findGeoIntersections(lightRay);
         //if there is nothing between the point and the light then the point is unshaded
@@ -231,7 +237,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @return the reflected ray
      */
     public Ray constructReflectedRay(Point p, Vector v, Vector n) {
-        Ray reflectedRay = new Ray(p,n,DELTA, v.createR(n));
+        Ray reflectedRay = new Ray(p,n, createR(v,n));
         return reflectedRay;
     }
 
@@ -245,7 +251,7 @@ public class RayTracerBasic extends RayTracerBase {
     public Ray constructRefractedRay(Point p, Vector v, Vector n) {
         //something transparent will show only the objects behind it.
         //we are moving the point using minus delta because we are moving inward in the opposite direction of the normal
-        Ray refractedRay = new Ray(p,n,-DELTA, v);
+        Ray refractedRay = new Ray(p,n,v);
         return refractedRay;
     }
 
@@ -276,9 +282,9 @@ public class RayTracerBasic extends RayTracerBase {
         //took a point adding epsilon in the direction of the normal
         Ray lightRay;
         if (n.dotProduct(lightDirection) > 0)
-            lightRay = new Ray(geoPoint._geoPoint, n, EPSILON, lightDirection);
+            lightRay = new Ray(geoPoint._geoPoint, n, lightDirection);
         else
-            lightRay = new Ray(geoPoint._geoPoint, n, -EPSILON, lightDirection);
+            lightRay = new Ray(geoPoint._geoPoint, n,  lightDirection);
         //checks for intersections between the point and the light
         List<GeoPoint> intersections = _scene._geometries.findGeoIntersections(lightRay);
         //if there is nothing between the point and the light then the point is unshaded
