@@ -29,17 +29,17 @@ public class PointLight extends Light implements LightSource {
     /***
      * setters in similar form to builder pattern which return this
      */
-    public PointLight setkC(double kC) {
+    public PointLight setKc(double kC) {
         _kC = kC;
         return this;
     }
 
-    public PointLight setkL(double kL) {
+    public PointLight setKl(double kL) {
         _kL = kL;
         return this;
     }
 
-    public PointLight setkQ(double kQ) {
+    public PointLight setKq(double kQ) {
         _kQ = kQ;
         return this;
     }

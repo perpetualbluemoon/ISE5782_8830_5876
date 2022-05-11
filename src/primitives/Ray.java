@@ -104,6 +104,5 @@ public class Ray {
         Point pointPlus = p.add(scaled);
         p0 = pointPlus;
         dir = lightDirection;
-
     }
 }

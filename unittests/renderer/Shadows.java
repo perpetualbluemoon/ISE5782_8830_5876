@@ -21,8 +21,8 @@ import static java.awt.Color.WHITE;
 public class Shadows {
     private Intersectable sphere = new Sphere(new Point(0, 0, -200), 60d) //
             .setEmission(new Color(BLUE))
-            .setMaterial(new Material().setkD(0.5).setkS(0.5).setShininess(30));
-    private Material trMaterial = new Material().setkS(0.5).setkS(0.5).setShininess(30);
+            .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30));
+    private Material trMaterial = new Material().setKs(0.5).setKs(0.5).setShininess(30);
 
     private Scene scene = new Scene.SceneBuilder("Test scene").build();
     private Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
@@ -36,7 +36,7 @@ public class Shadows {
         scene._geometries.add(sphere, triangle.setEmission(new Color(BLUE)).setMaterial(trMaterial));
         scene._lights.add( //
                 new Spotlight(new Color(400, 240, 0), spotLocation, new Vector(1, 1, -3)) //
-                        .setkL(1E-5).setkQ(1.5E-7));
+                        .setKl(1E-5).setKq(1.5E-7));
         camera.setImageWriter(new ImageWriter(pictName, 400, 400)) //
                 .renderImage() //
                 .writeToImage();
@@ -109,16 +109,16 @@ public class Shadows {
 
         scene1._geometries.add( //
                 new Triangle(new Point(-150, -150, -115), new Point(150, -150, -135), new Point(75, 75, -150)) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)), //
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)), //
                 new Triangle(new Point(-150, -150, -115), new Point(-70, 70, -140), new Point(75, 75, -150)) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)), //
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)), //
                 new Sphere(new Point(0, 0, -11), 30d) //
                         .setEmission(new Color(java.awt.Color.BLUE)) //
-                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setShininess(30)) //
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)) //
         );
         scene1._lights.add( //
                 new Spotlight(new Color(700, 400, 400), new Point(40, 40, 115), new Vector(-1, -1, -4)) //
-                        .setkL(4E-4).setkQ(2E-5));
+                        .setKl(4E-4).setKq(2E-5));
 
         camera.setImageWriter(new ImageWriter("shadowTrianglesSphere", 600, 600)) //
                 .renderImage() //
@@ -150,24 +150,24 @@ public class Shadows {
 
         scene1._geometries.add( //
                 new Triangle(p0, p1, p2) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.YELLOW),
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
                 new Triangle(p0, p2, p3) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.YELLOW),
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
                 new Triangle(p2, p3, p5) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.YELLOW),
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
                 new Triangle(p1, p2, p7) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.YELLOW),
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
                 new Triangle(p2, p4, p5) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.RED),
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.RED),
                 new Triangle(p4, p6, p7) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.RED),
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.RED),
                 new Triangle(p7, p2, p4) //
-                        .setMaterial(new Material().setkS(0.8).setShininess(60)).setEmission(Color.RED)//
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.RED)//
 
         );
         scene1._lights.add( //
                 new Spotlight(new Color(WHITE), new Point(2,2,2), new Vector(-1, -1, -1)) //
-                        .setkL(4E-4).setkQ(2E-5));
+                        .setKl(4E-4).setKq(2E-5));
 
         camera.setImageWriter(new ImageWriter("ours", 600, 600)) //
                 .renderImage() //

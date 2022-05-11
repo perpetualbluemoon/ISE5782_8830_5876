@@ -102,12 +102,13 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /***
+     * inner function
      * helper function for calcGlobalEffects used for recursion
-     * could have been written in reg calcglobal but instead of writing it twice for reflect and refract
+     * could have been written in reg calcGlobal but instead of writing it twice for reflect and refract
      * @param ray from the point to the camera
      * @param level number of recursions left
      * @param kx constant coefficient of lowering (could be kt or kr)
-     * @param kkx current kx, if it is smaller than min it wont add much to total color so no need to calc it
+     * @param kkx current kx, if it is smaller than min it won't add much to total color so no need to calc it
      * @return color
      */
     public Color calcGlobalEffects(Ray ray, int level, Double3 kx, double kkx) {
@@ -124,6 +125,7 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /***
+     * outer function
      * function calcGlobalEffects handles reflections and refractions of light on a specific point
      * @param geoPoint the point to calculate the color for
      * @param v the vector from the camera to the point
@@ -158,13 +160,14 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /***
-     *
+     * inner function
      * @param closestPoint the point that we want to find the color of
      * @param ray the ray from the camera through a pixel
      * @return the color for that point
      * recursive function
      */
     public Color calcColor(GeoPoint closestPoint, Ray ray, int level, double k) {
+        // calcLocalEffects includes the color of the object
         Color color = calcLocalEffectsSimple(closestPoint, ray, k);
         //adding the local effects according to the phong model, including emissions
         if (level == 1)
@@ -175,6 +178,7 @@ public class RayTracerBasic extends RayTracerBase {
 
     /***
      * this function calls calcColor with properties to limit recursion
+     * outer function
      * @param gp the point for which we want the color
      * @param ray the ray to the point from the camera to the point
      * @return the color for the point
@@ -240,7 +244,7 @@ public class RayTracerBasic extends RayTracerBase {
      */
     public Ray constructRefractedRay(Point p, Vector v, Vector n) {
         //something transparent will show only the objects behind it.
-        //we are moving the point using minus epsilon because we are moving inward in the opposite direction of the normal
+        //we are moving the point using minus delta because we are moving inward in the opposite direction of the normal
         Ray refractedRay = new Ray(p,n,-DELTA, v);
         return refractedRay;
     }
