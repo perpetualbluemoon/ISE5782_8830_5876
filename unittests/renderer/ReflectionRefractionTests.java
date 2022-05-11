@@ -163,10 +163,10 @@ public class ReflectionRefractionTests {
                         .setEmission(Color.RED)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //close to camera bigger
-                new Sphere(new Point(60, 0.75, 1.1), 0.5)
+                new Sphere(new Point(63, 0.75, 1.1), 0.5)
                         .setEmission(Color.GREEN)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                new Sphere(new Point(60, 0.75, 1.7), 0.2)
+                new Sphere(new Point(63, 0.75, 1.7), 0.2)
                         .setEmission(Color.GREEN)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //close to camera smaller

@@ -2,8 +2,12 @@ package renderer;
 
 import primitives.*;
 
+import java.util.LinkedList;
 import java.util.MissingResourceException;
+import java.util.OptionalDouble;
+import java.util.Random;
 
+import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
@@ -25,6 +29,12 @@ public class Camera {
     //information about creation of the final image
     private ImageWriter _imageWriter; //creates the photo
     private RayTracerBase _rayTracerBase;
+
+    //focal length
+    private double _focalLength = 2;
+    private double _apertureSize = 0.01;
+
+    private static final int NUMBER_OF_APERTURE_POINTS = 5;
 
 
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
@@ -88,6 +98,16 @@ public class Camera {
         return this;
     }
 
+    public Camera setFocalLength(double focalLength) {
+        _focalLength = focalLength;
+        return this;
+    }
+
+    public Camera setApertureSize(double apertureSize) {
+        _apertureSize = apertureSize;
+        return this;
+    }
+
     //getters
     public Vector getVright() {
         return _Vright;
@@ -115,6 +135,69 @@ public class Camera {
 
     public double getDistanceVPToCam() {
         return _distanceVPToCam;
+    }
+
+
+
+    /***
+     * function render Image checks that all the fields are initialized
+     */
+    public Camera renderImage() {
+        //coordinates of the camera are not null
+        if ((_Vright == null) || (_Vup == null) || (_Vto == null) || (_centerCam == null))
+            throw new MissingResourceException("Camera coordinates are not initialized", "Camera", "coordinates");
+
+        //information about the view plane does not need to be checked because double cannot be null
+
+        //information about creation of the final image
+        if ((_imageWriter == null) || (_rayTracerBase == null))
+            throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+
+        //for every row
+        for (int i = 0; i < _imageWriter.getNy(); i++) {
+            //for every column
+            for (int j = 0; j < _imageWriter.getNx(); j++) {
+                Color thisPixelColor = castRay(j, i, true); //on/off button off
+                _imageWriter.writePixel(j, i, thisPixelColor);
+            }
+        }
+        return this;
+    }
+
+    /***
+     * function printGrid places a grid
+     * @param interval size of the squares in the grid
+     * @param color color of the grid
+     */
+    public void printGrid(int interval, Color color) {
+        if (_imageWriter == null)
+            throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+        //for every row
+        for (int i = 0; i < _imageWriter.getNx(); i++) {
+            //for every column
+            for (int j = 0; j < _imageWriter.getNy(); j++) {
+                //grid: 800/50 = 16, 500/50 = 10
+                if ((i % interval == 0) || (j % interval == 0)) {
+                    _imageWriter.writePixel(i, j, color);
+                }
+            }
+        }
+    }
+
+    /***
+     * function checks the parameters and then calls function from class ImageWriter to create the image
+     */
+    public void writeToImage() {
+        //checks that the image writer field has been initialized
+        if (_imageWriter == null)
+            throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+        //calls writer function from class ImageWriter in renderer
+        _imageWriter.writeToImage();
+    }
+
+    public Camera setRayTracer(RayTracerBasic rayTracerBasic) {
+        _rayTracerBase = rayTracerBasic;
+        return this;
     }
 
     /***
@@ -162,71 +245,66 @@ public class Camera {
     }
 
     /***
-     * function render Image checks that all the fields are initialized
+     * this function creates a ray from the aperture point (which changes multiple times in one pixel)
+     * the ray goes through the focal point (calculated one time per pixel)
+     * @param aperturePoint a point near the Camera moved slightly according to the aperture size
+     * @param focalPoint the point of focus directly from the camera through the pixel according to the focal length
+     * @return the ray
      */
-    //???????????????????????/ check that return this works
-    public Camera renderImage() {
-        //coordinates of the camera are not null
-        if ((_Vright == null) || (_Vup == null) || (_Vto == null) || (_centerCam == null))
-            throw new MissingResourceException("Camera coordinates are not initialized", "Camera", "coordinates");
+    public Ray constructDepthRay(Point aperturePoint, Point focalPoint ){
+        Vector direction = focalPoint.subtract(aperturePoint);
+        Ray depthRay = new Ray(aperturePoint, direction);
+        return depthRay;
+    }
 
-        //information about the view plane does not need to be checked because double cannot be null
 
-        //information about creation of the final image
-        if ((_imageWriter == null) || (_rayTracerBase == null))
-            throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+    public Color castRay(int j, int i, boolean isDeep) {
+        if(!isDeep) { //on/off button
+            Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+            Color thisPixelColor = _rayTracerBase.traceRay(thisPixelRay);
 
-        //for every row
-        for (int i = 0; i < _imageWriter.getNy(); i++) {
-            //for every column
-            for (int j = 0; j < _imageWriter.getNx(); j++) {
-                Color thisPixelColor = castRay(j, i);
-                _imageWriter.writePixel(j, i, thisPixelColor);
-            }
+            return thisPixelColor;
         }
-        return this;
-    }
+        else //code for the depth of field
+        {
+            //one time calculate focal point
+            Point focalPoint = _centerCam.add(_Vto.scale(_focalLength));
+            //list of coordinates from each color for calculating the final color
+            LinkedList colorX = new LinkedList<>();
+            LinkedList colorY = new LinkedList<>();
+            LinkedList colorZ = new LinkedList<>();
+            //for: randomly calculate aperture point (point near camera origin moved by max aperture amount)
 
-    /***
-     * function printGrid places a grid
-     * @param interval size of the squares in the grid
-     * @param color color of the grid
-     */
-    public void printGrid(int interval, Color color) {
-        if (_imageWriter == null)
-            throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
-        //for every row
-        for (int i = 0; i < _imageWriter.getNx(); i++) {
-            //for every column
-            for (int j = 0; j < _imageWriter.getNy(); j++) {
-                //grid: 800/50 = 16, 500/50 = 10
-                if ((i % interval == 0) || (j % interval == 0)) {
-                    _imageWriter.writePixel(i, j, color);
-                }
-            }
+
+            //     construct depth ray from the aperture point to the focal point
+            //     get the color using trace ray and add to list
+            for (int count = 0; count<NUMBER_OF_APERTURE_POINTS; count++){
+                Random rand = new Random();
+                double moveUp = rand.nextDouble()*_apertureSize;
+                double moveRight = rand.nextDouble()*_apertureSize;
+
+                Point movedPoint = _centerCam.add(_Vup.scale(moveUp));
+                movedPoint = movedPoint.add(_Vright.scale(moveRight));
+
+                Ray depthRay = constructDepthRay(movedPoint, focalPoint);
+                Color thisPointColor = _rayTracerBase.traceRay(depthRay);
+
+                colorX.add(thisPointColor.getColor().getRed());
+                colorY.add(thisPointColor.getColor().getGreen());
+                colorZ.add(thisPointColor.getColor().getBlue());
+
         }
-    }
+            // out of the for: calculate average of x,y,z for the colors (x,y,z)
 
-    /***
-     * function checks the parameters and then calls function from class ImageWriter to create the image
-     */
-    public void writeToImage() {
-        //checks that the image writer field has been initialized
-        if (_imageWriter == null)
-            throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
-        //calls writer function from class ImageWriter in renderer
-        _imageWriter.writeToImage();
-    }
+            double averageX = colorX.stream().count()/ (double)colorX.size();
+            out.print(colorX.stream().count());
+            out.print(colorX.size());
+            double averageY = colorY.stream().count()/ (double)colorY.size();
+            double averageZ = colorZ.stream().count()/ (double)colorZ.size();
 
-    public Camera setRayTracer(RayTracerBasic rayTracerBasic) {
-        _rayTracerBase = rayTracerBasic;
-        return this;
-    }
+            Color thisPixelColor = new Color(averageX, averageY, averageZ);
+            return thisPixelColor;
+        }
 
-    public Color castRay(int j, int i) {
-        Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
-        Color thisPixelColor = _rayTracerBase.traceRay(thisPixelRay);
-
-        return thisPixelColor;
     }
 }

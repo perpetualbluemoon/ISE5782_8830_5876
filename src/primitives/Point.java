@@ -45,7 +45,7 @@ public class Point {
     }
 
     /***
-     *
+     * vector is in the direction from the other to me
      * @param other is other vector
      * @return my vector minus other vector
      */
@@ -91,4 +91,6 @@ public class Point {
         public double distance(Point p){
         return Math.sqrt(distanceSquared(p));
         }
+
+
 }
