@@ -213,7 +213,7 @@ public class RayTracerBasic extends RayTracerBase {
         Ray lightRay;
         Vector v;
         if (n.dotProduct(lightDirection) < 0) {
-            v = n.scale(-EPSILON);
+            v = n.scale(-EPSILON );
         } else {
             v = n.scale(EPSILON);
         }
