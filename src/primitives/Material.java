@@ -14,22 +14,22 @@ public class Material {
     /***
      * setters in similar form to builder pattern - they return the current object
      */
-    public Material setkD(Double3 kD) {
+    public Material setKd(Double3 kD) {
         _kD = kD;
         return this;
     }
 
-    public Material setkS(Double3 kS) {
+    public Material setKs(Double3 kS) {
         _kS = kS;
         return this;
     }
 
-    public Material setkD(double kD) {
+    public Material setKd(double kD) {
         _kD = new Double3(kD);
         return this;
     }
 
-    public Material setkS(double kS) {
+    public Material setKs(double kS) {
         _kS = new Double3(kS);
         return this;
     }
@@ -39,12 +39,12 @@ public class Material {
         return this;
     }
 
-    public Material setkT(Double3 kT) {
+    public Material setKt(Double3 kT) {
         this.kT = kT;
         return this;
     }
 
-    public Material setkR(Double3 kR) {
+    public Material setKr(Double3 kR) {
         this.kR = kR;
         return this;
     }

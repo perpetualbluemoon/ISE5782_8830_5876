@@ -9,6 +9,7 @@ import primitives.Vector;
  */
 public class Spotlight extends PointLight {
     Vector _direction;
+    int _narrowBeam;
 
     /***
      * constructor for spotlight
@@ -33,5 +34,15 @@ public class Spotlight extends PointLight {
         Vector l = getL(p); //vector from light to point p
         double max = Math.max(0, _direction.normalize().dotProduct(l));
         return super.getIntensity(p).scale(max); //uses parent function to implement DRY
+    }
+
+    /***
+     * function for setting the narrowness of the beam, this is never used
+     * @param narrowBeam width of beam
+     * @return Spotlight for building purposes
+     */
+    public Spotlight setNarrowBeam(int narrowBeam) {
+        _narrowBeam = narrowBeam;
+        return this;
     }
 }
