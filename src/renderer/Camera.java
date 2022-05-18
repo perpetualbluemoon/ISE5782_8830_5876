@@ -6,6 +6,7 @@ import java.util.MissingResourceException;
 import java.util.Random;
 
 import static java.lang.Math.max;
+import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
@@ -37,8 +38,11 @@ public class Camera {
 
     private static final int NUMBER_OF_APERTURE_POINTS = 10;
 
+
     //ON/OFF button default is off
-    private boolean _JaggedEdgesButton = true;
+    private boolean _JaggedEdgesButton = false;
+    //number of minipixels is used for both height and width of the minipixel for simplicity
+    private static int NUMBER_OF_MINIPIXELS = 3;
 
 
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
@@ -212,34 +216,7 @@ public class Camera {
      * @return ray through that pixel
      */
     public Ray constructRay(int nX, int nY, int j, int i) {
-        //calculating center point
-        //you cannot use getPoint because there is no ray
-        //𝑃𝑐 = 𝑃0 + 𝑑 ∙ 𝑣
-        //finding middle of view plane
-        Point pc = _centerCam.add(_Vto.scale(_distanceVPToCam));
-        //𝑅𝑦 = ℎ/𝑁𝑦
-        //𝑅𝑥 = 𝑤/𝑁x
-        //calculating size of pixels for width and height
-        double ry = _heightVP / nY;
-        double rx = _widthVP / nX;
-        //finding how much to move up and right to find wanted pixel
-        double xj = (j - ((nX - 1) / 2.0)) * rx;
-        double yi = -(i - ((nY - 1) / 2.0)) * ry;
-
-        //Pij = Pc + (xj*Vright + yi*Vup)
-        //𝑦𝑖 = −(𝑖 – (𝑁𝑦 − 1)/2) ∙ 𝑅𝑦
-        // 𝑥𝑗 = (𝑗 – (𝑁𝑥 − 1)/2) ∙ 𝑅x
-        // finding point pij wanted pixel according to the formula
-        //doing it in parts to prevent addition of zero
-        Point Pij = pc;
-        if (!isZero(xj)) {
-            //xj*Vright
-            Pij = Pij.add(_Vright.scale(xj));
-        }
-        if (!isZero(yi)) {
-            //yi*Vup
-            Pij = Pij.add(_Vup.scale(yi));
-        }
+        Point Pij = createMiddlePixel(nX, nY, j, i);
         //pc!=p0 so subtract will not create vector 0
         Vector Vij = Pij.subtract(_centerCam);
         //𝒗𝒊,𝒋 = 𝑷𝒊,𝒋 − 𝑷0
@@ -279,40 +256,53 @@ public class Camera {
             return thisPixelColor;
         }
 
-        if(_JaggedEdgesButton){
-            Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
-            double heightOfMiniPixel = (_heightVP/ _imageWriter.getNy())/9;
-            double widthOfMiniPixel = (_widthVP/ _imageWriter.getNx())/9;
-
-            //creating a point in the top left corner that is slightly outside the square so that our loop will bring it
-            //down and to the right each time and hit the center of a mini pixel
-            Point outerTopLeftCorner = thisPixelRay.getP0().add(_Vup.scale(_heightVP/2 + heightOfMiniPixel*0.5));
-            outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(_widthVP/-2 + widthOfMiniPixel*0.5));
-
+        if (_JaggedEdgesButton) {
+            //inital color for average calculation
             double colorX = 0;
             double colorY = 0;
             double colorZ = 0;
 
+            Point thisPixelPoint = createMiddlePixel(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+            // out.print(thisPixelPoint);
+            double heightOfMiniPixel = (_heightVP / _imageWriter.getNy()) / NUMBER_OF_MINIPIXELS;
+            double widthOfMiniPixel = (_widthVP / _imageWriter.getNx()) / NUMBER_OF_MINIPIXELS;
+
+            //creating a point in the top left corner that is slightly outside the square so that our loop will bring it
+            Point outerTopLeftCorner = thisPixelPoint.add(_Vup.scale(heightOfMiniPixel * 0.5));
+            outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
+
+
             //for each mini pixel
-            for(int row = 1; row<=9; row++){
-                //lowers the point for each row
-                Point startPoint = outerTopLeftCorner.add(_Vup.scale(-1*row*heightOfMiniPixel));
-                for (int column = 1; column<=9; column++){
-                    Point currentPoint = startPoint.add(_Vright.scale(column*widthOfMiniPixel));
+            for (int row = 1; row <= NUMBER_OF_MINIPIXELS; row++) {
+                //lowers the point for each row of minipixels
+                Point startPoint = outerTopLeftCorner.add(_Vup.scale(-1 * row * heightOfMiniPixel));
+                for (int column = 1; column <= NUMBER_OF_MINIPIXELS; column++) {
+                    //moved the point to the right for each minipixel
+
+                    Point currentPoint = startPoint.add(_Vright.normalize().scale(column * widthOfMiniPixel));
+                    //out.print(currentPoint);
+                    //?????????should we make movedPointrandom get width and length insead of aparture???????????
+                    //creating ray from camera through random point in minipixel
+
                     Point movedPoint = movePointRandom(currentPoint, _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
+                    Vector rayDirectionFromMiniPixel = _centerCam.subtract(movedPoint);
+                    Ray jaggedEdgesRay = new Ray(movedPoint, rayDirectionFromMiniPixel);
 
-                    Ray jaggedEdgesRay = new Ray (movedPoint, thisPixelRay.getDir());
+                    //tracing ray for color
                     Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
-
+                    //out.print(thisPointColor);
+                    //adding the colors for average
                     colorX += thisPointColor.getColor().getRed();
                     colorY += thisPointColor.getColor().getGreen();
                     colorZ += thisPointColor.getColor().getBlue();
                 }
             }
 
-            double averageX = colorX / 9;
-            double averageY = colorY / 9;
-            double averageZ = colorZ / 9;
+            //calculating the average - dividing by the number of mini pixels squared because of the double loop
+            double averageX = colorX / NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS;
+
+            double averageY = colorY / NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS;
+            double averageZ = colorZ / NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS;
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;
@@ -358,7 +348,7 @@ public class Camera {
         return Color.BLACK;
     }
 
-    public void setButton(boolean button, double apertureSize, double focalLength) {
+    public void setDepthButton(boolean button, double apertureSize, double focalLength) {
         _depthButton = button;
         _apertureSize = apertureSize;
         _focalLength = focalLength;
@@ -366,6 +356,15 @@ public class Camera {
 
     public void setDepthButton(boolean depthButton) {
         _depthButton = depthButton;
+    }
+
+    public void setJaggedEdgesButton(boolean jaggedEdgesButton, int numberOfMiniPixels) {
+        _JaggedEdgesButton = jaggedEdgesButton;
+        NUMBER_OF_MINIPIXELS = numberOfMiniPixels;
+    }
+
+    public void setJaggedEdgesButton(boolean jaggedEdgesButton) {
+        _JaggedEdgesButton = jaggedEdgesButton;
     }
 
     /***
@@ -395,5 +394,47 @@ public class Camera {
         movedPoint = movedPoint.add(right.scale(moveRight * rightMinus));
 
         return movedPoint;
+    }
+
+    /***
+     * this function recieves the parameters of a pixel and returns a point in the middle of the pixel
+     * @param nX number of columns
+     * @param nY number of rows
+     * @param j current column
+     * @param i current row
+     * @return middle of pixel
+     */
+    public Point createMiddlePixel(int nX, int nY, int j, int i) {
+        // calculating center point
+        //you cannot use getPoint because there is no ray
+        //𝑃𝑐 = 𝑃0 + 𝑑 ∙ 𝑣
+        //finding middle of view plane
+        Point pc = _centerCam.add(_Vto.scale(_distanceVPToCam));
+        //𝑅𝑦 = ℎ/𝑁𝑦{
+        //        //
+        //𝑅𝑥 = 𝑤/𝑁x
+        //calculating size of pixels for width and height
+        double ry = _heightVP / nY;
+        double rx = _widthVP / nX;
+        //finding how much to move up and right to find wanted pixel
+        double xj = (j - ((nX - 1) / 2.0)) * rx;
+        double yi = -(i - ((nY - 1) / 2.0)) * ry;
+
+        //Pij = Pc + (xj*Vright + yi*Vup)
+        //𝑦𝑖 = −(𝑖 – (𝑁𝑦 − 1)/2) ∙ 𝑅𝑦
+        // 𝑥𝑗 = (𝑗 – (𝑁𝑥 − 1)/2) ∙ 𝑅x
+        // finding point pij wanted pixel according to the formula
+        //doing it in parts to prevent addition of zero
+        Point Pij = pc;
+        if (!isZero(xj)) {
+            //xj*Vright
+            Pij = Pij.add(_Vright.scale(xj));
+        }
+        if (!isZero(yi)) {
+            //yi*Vup
+            Pij = Pij.add(_Vup.scale(yi));
+        }
+
+        return Pij;
     }
 }
