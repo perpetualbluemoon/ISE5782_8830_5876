@@ -30,11 +30,14 @@ public class Camera {
     private ImageWriter _imageWriter; //creates the photo
     private RayTracerBase _rayTracerBase;
 
+    //ON/OFF button default is off
+    private boolean _button = false;
+
     //focal length
     private double _focalLength = 2;
     private double _apertureSize = 0.01;
 
-    private static final int NUMBER_OF_APERTURE_POINTS = 5;
+    private static final int NUMBER_OF_APERTURE_POINTS = 10;
 
 
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
@@ -138,7 +141,6 @@ public class Camera {
     }
 
 
-
     /***
      * function render Image checks that all the fields are initialized
      */
@@ -157,7 +159,7 @@ public class Camera {
         for (int i = 0; i < _imageWriter.getNy(); i++) {
             //for every column
             for (int j = 0; j < _imageWriter.getNx(); j++) {
-                Color thisPixelColor = castRay(j, i, true); //on/off button off
+                Color thisPixelColor = castRay(j, i);
                 _imageWriter.writePixel(j, i, thisPixelColor);
             }
         }
@@ -251,60 +253,81 @@ public class Camera {
      * @param focalPoint the point of focus directly from the camera through the pixel according to the focal length
      * @return the ray
      */
-    public Ray constructDepthRay(Point aperturePoint, Point focalPoint ){
+    public Ray constructDepthRay(Point aperturePoint, Point focalPoint) {
         Vector direction = focalPoint.subtract(aperturePoint);
         Ray depthRay = new Ray(aperturePoint, direction);
         return depthRay;
     }
 
 
-    public Color castRay(int j, int i, boolean isDeep) {
-        if(!isDeep) { //on/off button
+    public Color castRay(int j, int i) {
+        if (!_button) { //on/off button
             Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
             Color thisPixelColor = _rayTracerBase.traceRay(thisPixelRay);
 
             return thisPixelColor;
-        }
-        else //code for the depth of field
+        } else //code for the depth of field
         {
             //one time calculate focal point
-            Point focalPoint = _centerCam.add(_Vto.scale(_focalLength));
+            Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+            Point focalPoint = _centerCam.add(thisPixelRay.getDir().scale(_focalLength));
             //list of coordinates from each color for calculating the final color
-            LinkedList colorX = new LinkedList<>();
-            LinkedList colorY = new LinkedList<>();
-            LinkedList colorZ = new LinkedList<>();
+            double colorX = 0;
+            double colorY = 0;
+            double colorZ = 0;
+
             //for: randomly calculate aperture point (point near camera origin moved by max aperture amount)
 
 
             //     construct depth ray from the aperture point to the focal point
             //     get the color using trace ray and add to list
-            for (int count = 0; count<NUMBER_OF_APERTURE_POINTS; count++){
+            for (int count = 0; count < NUMBER_OF_APERTURE_POINTS; count++) {
                 Random rand = new Random();
-                double moveUp = rand.nextDouble()*_apertureSize;
-                double moveRight = rand.nextDouble()*_apertureSize;
+                double moveUp = rand.nextDouble() * _apertureSize;
+                double moveRight = rand.nextDouble() * _apertureSize;
 
-                Point movedPoint = _centerCam.add(_Vup.scale(moveUp));
-                movedPoint = movedPoint.add(_Vright.scale(moveRight));
+                int upMinus = rand.nextInt()%2;
+                int rightMinus = rand.nextInt()%2;
+
+               if (upMinus == 0)
+                    upMinus = -1;
+
+                if (rightMinus == 0)
+                    rightMinus = -1;
+
+
+
+
+                Point movedPoint = _centerCam.add(_Vup.scale(moveUp*upMinus));
+                movedPoint = movedPoint.add(_Vright.scale(moveRight*rightMinus));
 
                 Ray depthRay = constructDepthRay(movedPoint, focalPoint);
                 Color thisPointColor = _rayTracerBase.traceRay(depthRay);
 
-                colorX.add(thisPointColor.getColor().getRed());
-                colorY.add(thisPointColor.getColor().getGreen());
-                colorZ.add(thisPointColor.getColor().getBlue());
+                colorX += thisPointColor.getColor().getRed();
+                colorY += thisPointColor.getColor().getGreen();
+                colorZ += thisPointColor.getColor().getBlue();
 
-        }
+            }
             // out of the for: calculate average of x,y,z for the colors (x,y,z)
 
-            double averageX = colorX.stream().count()/ (double)colorX.size();
-            out.print(colorX.stream().count());
-            out.print(colorX.size());
-            double averageY = colorY.stream().count()/ (double)colorY.size();
-            double averageZ = colorZ.stream().count()/ (double)colorZ.size();
+            double averageX = colorX/NUMBER_OF_APERTURE_POINTS;
+            double averageY = colorY/NUMBER_OF_APERTURE_POINTS;
+            double averageZ = colorZ/NUMBER_OF_APERTURE_POINTS;
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;
         }
 
+    }
+
+    public void setButton(boolean button, double apertureSize, double focalLength) {
+        _button = button;
+        _apertureSize = apertureSize;
+        _focalLength = focalLength;
+    }
+
+    public void setButton(boolean button) {
+        _button = button;
     }
 }
