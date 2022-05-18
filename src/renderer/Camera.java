@@ -2,12 +2,10 @@ package renderer;
 
 import primitives.*;
 
-import java.util.LinkedList;
 import java.util.MissingResourceException;
-import java.util.OptionalDouble;
 import java.util.Random;
 
-import static java.lang.System.out;
+import static java.lang.Math.max;
 import static primitives.Util.isZero;
 
 /***
@@ -31,13 +29,16 @@ public class Camera {
     private RayTracerBase _rayTracerBase;
 
     //ON/OFF button default is off
-    private boolean _button = false;
+    private boolean _depthButton = false;
 
     //focal length
     private double _focalLength = 2;
     private double _apertureSize = 0.01;
 
     private static final int NUMBER_OF_APERTURE_POINTS = 10;
+
+    //ON/OFF button default is off
+    private boolean _JaggedEdgesButton = true;
 
 
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
@@ -260,14 +261,65 @@ public class Camera {
     }
 
 
+    /***
+     * cast ray is the main function in which the modifications of part 8 are made
+     * for this reason, there are multiple clauses checking which fix we are currently in
+     * this function casts a ray from the camera through the current pixel and returns the color of that pixel
+     * @param j the column of the pixel
+     * @param i the row of the pixel
+     * @return color of the pixel
+     */
     public Color castRay(int j, int i) {
-        if (!_button) { //on/off button
+
+        if ((!_depthButton) && (!_JaggedEdgesButton)) { //default code
             Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+
             Color thisPixelColor = _rayTracerBase.traceRay(thisPixelRay);
 
             return thisPixelColor;
-        } else //code for the depth of field
-        {
+        }
+
+        if(_JaggedEdgesButton){
+            Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+            double heightOfMiniPixel = (_heightVP/ _imageWriter.getNy())/9;
+            double widthOfMiniPixel = (_widthVP/ _imageWriter.getNx())/9;
+
+            //creating a point in the top left corner that is slightly outside the square so that our loop will bring it
+            //down and to the right each time and hit the center of a mini pixel
+            Point outerTopLeftCorner = thisPixelRay.getP0().add(_Vup.scale(_heightVP/2 + heightOfMiniPixel*0.5));
+            outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(_widthVP/-2 + widthOfMiniPixel*0.5));
+
+            double colorX = 0;
+            double colorY = 0;
+            double colorZ = 0;
+
+            //for each mini pixel
+            for(int row = 1; row<=9; row++){
+                //lowers the point for each row
+                Point startPoint = outerTopLeftCorner.add(_Vup.scale(-1*row*heightOfMiniPixel));
+                for (int column = 1; column<=9; column++){
+                    Point currentPoint = startPoint.add(_Vright.scale(column*widthOfMiniPixel));
+                    Point movedPoint = movePointRandom(currentPoint, _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
+
+                    Ray jaggedEdgesRay = new Ray (movedPoint, thisPixelRay.getDir());
+                    Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
+
+                    colorX += thisPointColor.getColor().getRed();
+                    colorY += thisPointColor.getColor().getGreen();
+                    colorZ += thisPointColor.getColor().getBlue();
+                }
+            }
+
+            double averageX = colorX / 9;
+            double averageY = colorY / 9;
+            double averageZ = colorZ / 9;
+
+            Color thisPixelColor = new Color(averageX, averageY, averageZ);
+            return thisPixelColor;
+
+        }
+
+        if (_depthButton) { //on/off button
             //one time calculate focal point
             Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
             Point focalPoint = _centerCam.add(thisPixelRay.getDir().scale(_focalLength));
@@ -282,24 +334,9 @@ public class Camera {
             //     construct depth ray from the aperture point to the focal point
             //     get the color using trace ray and add to list
             for (int count = 0; count < NUMBER_OF_APERTURE_POINTS; count++) {
-                Random rand = new Random();
-                double moveUp = rand.nextDouble() * _apertureSize;
-                double moveRight = rand.nextDouble() * _apertureSize;
 
-                int upMinus = rand.nextInt()%2;
-                int rightMinus = rand.nextInt()%2;
-
-               if (upMinus == 0)
-                    upMinus = -1;
-
-                if (rightMinus == 0)
-                    rightMinus = -1;
-
-
-
-
-                Point movedPoint = _centerCam.add(_Vup.scale(moveUp*upMinus));
-                movedPoint = movedPoint.add(_Vright.scale(moveRight*rightMinus));
+                //helper function returns one random point around the center
+                Point movedPoint = movePointRandom(_centerCam, _Vup, _Vright, _apertureSize);
 
                 Ray depthRay = constructDepthRay(movedPoint, focalPoint);
                 Color thisPointColor = _rayTracerBase.traceRay(depthRay);
@@ -311,23 +348,52 @@ public class Camera {
             }
             // out of the for: calculate average of x,y,z for the colors (x,y,z)
 
-            double averageX = colorX/NUMBER_OF_APERTURE_POINTS;
-            double averageY = colorY/NUMBER_OF_APERTURE_POINTS;
-            double averageZ = colorZ/NUMBER_OF_APERTURE_POINTS;
+            double averageX = colorX / NUMBER_OF_APERTURE_POINTS;
+            double averageY = colorY / NUMBER_OF_APERTURE_POINTS;
+            double averageZ = colorZ / NUMBER_OF_APERTURE_POINTS;
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;
         }
-
+        return Color.BLACK;
     }
 
     public void setButton(boolean button, double apertureSize, double focalLength) {
-        _button = button;
+        _depthButton = button;
         _apertureSize = apertureSize;
         _focalLength = focalLength;
     }
 
-    public void setButton(boolean button) {
-        _button = button;
+    public void setDepthButton(boolean depthButton) {
+        _depthButton = depthButton;
+    }
+
+    /***
+     * helper function implementing DRY
+     * @param origin the point for which to find a nearby
+     * @param up direction to move
+     * @param right direction to move
+     * @param aperture distance to move
+     * @return random point in rectangle around the origin
+     */
+    public Point movePointRandom(Point origin, Vector up, Vector right, double aperture) {
+        Random rand = new Random();
+        double moveUp = rand.nextDouble() * aperture;
+        double moveRight = rand.nextDouble() * aperture;
+
+        int upMinus = rand.nextInt() % 2;
+        int rightMinus = rand.nextInt() % 2;
+
+        if (upMinus == 0)
+            upMinus = -1;
+
+        if (rightMinus == 0)
+            rightMinus = -1;
+
+
+        Point movedPoint = origin.add(up.scale(moveUp * upMinus));
+        movedPoint = movedPoint.add(right.scale(moveRight * rightMinus));
+
+        return movedPoint;
     }
 }
