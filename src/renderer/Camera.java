@@ -275,7 +275,7 @@ public class Camera {
             //for each mini pixel
             for (int row = 1; row <= NUMBER_OF_MINIPIXELS; row++) {
                 //lowers the point for each row of minipixels
-                Point startPoint = outerTopLeftCorner.add(_Vup.scale(-1 * row * heightOfMiniPixel));
+                Point startPoint =  outerTopLeftCorner.add(_Vup.scale( -1*row * heightOfMiniPixel));
                 for (int column = 1; column <= NUMBER_OF_MINIPIXELS; column++) {
                     //moved the point to the right for each minipixel
 
@@ -285,8 +285,9 @@ public class Camera {
                     //creating ray from camera through random point in minipixel
 
                     Point movedPoint = movePointRandom(currentPoint, _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
-                    Vector rayDirectionFromMiniPixel = _centerCam.subtract(movedPoint);
-                    Ray jaggedEdgesRay = new Ray(movedPoint, rayDirectionFromMiniPixel);
+                    //Point movedPoint=currentPoint;
+                    Vector rayDirectionFromMiniPixel =_centerCam.subtract(movedPoint).normalize();
+                    Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
 
                     //tracing ray for color
                     Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
@@ -295,14 +296,15 @@ public class Camera {
                     colorX += thisPointColor.getColor().getRed();
                     colorY += thisPointColor.getColor().getGreen();
                     colorZ += thisPointColor.getColor().getBlue();
+                    //out.print(_centerCam.subtract(movedPoint).normalize());
                 }
             }
 
             //calculating the average - dividing by the number of mini pixels squared because of the double loop
-            double averageX = colorX / NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS;
 
-            double averageY = colorY / NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS;
-            double averageZ = colorZ / NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS;
+            double averageX = colorX / (NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS);
+            double averageY = colorY / (NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS);
+            double averageZ = colorZ / (NUMBER_OF_MINIPIXELS * NUMBER_OF_MINIPIXELS);
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;

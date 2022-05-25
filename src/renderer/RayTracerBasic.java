@@ -9,7 +9,6 @@ import scene.Scene;
 import java.util.LinkedList;
 import java.util.List;
 
-import static java.lang.System.out;
 import static primitives.Util.alignZero;
 
 
@@ -84,7 +83,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @param ray ray from the camera
      * @return the color of the point
      */
-    private Color calcLocalEffectsSimple(GeoPoint intersection, Ray ray, double k) {
+    private Color calcLocalEffects(GeoPoint intersection, Ray ray, double k) {
         Color color = intersection._geoPointGeometry.getEmission();//.scale(1 - intersection._geoPointGeometry.getMaterial().kT.getD1());
         Vector v = ray.getDir();
         Vector n = intersection._geoPointGeometry.getNormal(intersection._geoPoint);
@@ -174,7 +173,7 @@ public class RayTracerBasic extends RayTracerBase {
      */
     public Color calcColor(GeoPoint closestPoint, Ray ray, int level, double k) {
         // calcLocalEffects includes the color of the object
-        Color color = calcLocalEffectsSimple(closestPoint, ray, k);
+        Color color = calcLocalEffects(closestPoint, ray, k);
         //adding the local effects according to the phong model, including emissions
         if (level == 1)
             return color;
