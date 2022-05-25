@@ -44,7 +44,7 @@ public class RayTracerBasic extends RayTracerBase {
         GeoPoint closestPoint = findClosestGeoIntersection(ray);
         //out.print(closestPoint);
         if (closestPoint == null)
-            return _scene._background;
+            return _scene.getBackground();
         Color thisPixelColor = calcColor(closestPoint, ray);
         return thisPixelColor;
     }
@@ -91,7 +91,7 @@ public class RayTracerBasic extends RayTracerBase {
         double nv = alignZero(n.dotProduct(v));
         if (nv == 0) return color;
         Material material = intersection._geoPointGeometry.getMaterial();
-        for (LightSource lightSource : _scene._lights) {
+        for (LightSource lightSource : _scene.getLights()) {
             Vector l = lightSource.getL(intersection._geoPoint);
             double nl = alignZero(n.dotProduct(l));
             if (nl * nv > 0) { // sign(nl) == sing(nv)
@@ -120,7 +120,7 @@ public class RayTracerBasic extends RayTracerBase {
     public Color calcGlobalEffects(Ray ray, int level, Double3 kx, double kkx) {
         GeoPoint gp = findClosestGeoIntersection(ray);
         if (gp == null) {
-            return _scene._background;
+            return _scene.getBackground();
         }
 
         //level-1 to ensure that the recursion stops
@@ -191,7 +191,7 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private Color calcColor(GeoPoint gp, Ray ray) {
         Color x = calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, INITIAL_K);
-        return x.add(_scene._ambientLight.getIntensity());
+        return x.add(_scene.getAmbientLight().getIntensity());
     }
 
     /***
@@ -210,7 +210,7 @@ public class RayTracerBasic extends RayTracerBase {
         else
             lightRay = new Ray(gp._geoPoint, n, lightDirection);
         //checks for intersections between the point and the light
-        List<GeoPoint> intersections = _scene._geometries.findGeoIntersections(lightRay);
+        List<GeoPoint> intersections = _scene.getGeometries().findGeoIntersections(lightRay);
         //if there is nothing between the point and the light then the point is unshaded
         if (intersections == null)
             return true;
@@ -261,7 +261,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @return GeoPoint
      */
     private GeoPoint findClosestGeoIntersection(Ray ray) {
-        LinkedList<GeoPoint> l = (LinkedList<GeoPoint>) _scene._geometries.findGeoIntersections(ray);
+        LinkedList<GeoPoint> l = (LinkedList<GeoPoint>) _scene.getGeometries().findGeoIntersections(ray);
         if (l == null)
             return null;
         if (l.isEmpty())
@@ -286,7 +286,7 @@ public class RayTracerBasic extends RayTracerBase {
         else
             lightRay = new Ray(geoPoint._geoPoint, n,  lightDirection);
         //checks for intersections between the point and the light
-        List<GeoPoint> intersections = _scene._geometries.findGeoIntersections(lightRay);
+        List<GeoPoint> intersections = _scene.getGeometries().findGeoIntersections(lightRay);
         //if there is nothing between the point and the light then the point is unshaded
         if (intersections == null)
             return 1.0;

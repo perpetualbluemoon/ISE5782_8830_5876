@@ -15,11 +15,11 @@ import java.util.LinkedList;
 public class Scene {
 
 
-    public String _name; //scene name
-    public Color _background;  //background color
-    public AmbientLight _ambientLight;//ambient light
-    public Geometries _geometries; // all the shapes in the scene
-    public LinkedList<LightSource> _lights; //all the light sources in the scene except for ambient light
+    private String _name; //scene name
+    private Color _background;  //background color
+    private AmbientLight _ambientLight;//ambient light
+    private Geometries _geometries; // all the shapes in the scene
+    private LinkedList<LightSource> _lights; //all the light sources in the scene except for ambient light
 
     private Scene(SceneBuilder built){
         _name=built._name; //scene name
@@ -72,5 +72,24 @@ public class Scene {
 
     }
 
+    public String getName() {
+        return _name;
+    }
+
+    public Color getBackground() {
+        return _background;
+    }
+
+    public AmbientLight getAmbientLight() {
+        return _ambientLight;
+    }
+
+    public Geometries getGeometries() {
+        return _geometries;
+    }
+
+    public LinkedList<LightSource> getLights() {
+        return _lights;
+    }
 }
 
