@@ -133,4 +133,40 @@ public class ShadowTests {
                 .writeToImage();
     }
 
+    /**
+     * Produce a picture of a two triangles lighted by a spot light with a Sphere
+     * producing a shading
+     */
+    @Test
+    public void ourTestSoftShadows1() {
+        Geometries geometries = new Geometries(
+                new Triangle(new Point(-150, -150, -115), new Point(150, -150, -135), new Point(75, 75, -150)) //
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)), //
+                new Triangle(new Point(-150, -150, -115), new Point(-70, 70, -140), new Point(75, 75, -150)) //
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)), //
+                new Sphere(new Point(0, 0, -11), 30d) //
+                        .setEmission(new Color(java.awt.Color.BLUE)) //
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30))
+        );
+        LinkedList<LightSource> lights = new LinkedList<>();
+
+
+
+        lights.add( //
+                new PointLight(new Color(700, 400, 400), new Point(40, 40, 115)) //
+                        .setKl(4E-4).setKq(2E-5));
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), new Double3(0.15)))
+                .setLights(lights).build();
+
+        Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+                .setVPSize(200, 200).setVPDistance(1000) //
+                .setRayTracer(new RayTracerBasic(scene2));
+
+        camera.setImageWriter(new ImageWriter("shadowTrianglesSphere soft shadows", 600, 600)) //
+                .renderImage() //
+                .writeToImage();
+    }
+
 }

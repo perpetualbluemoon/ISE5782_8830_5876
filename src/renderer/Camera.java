@@ -284,7 +284,7 @@ public class Camera {
                     //?????????should we make movedPointrandom get width and length insead of aparture???????????
                     //creating ray from camera through random point in minipixel
 
-                    Point movedPoint = movePointRandom(currentPoint, _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
+                    Point movedPoint = currentPoint.movePointRandom( _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
                     //Point movedPoint=currentPoint;
                     Vector rayDirectionFromMiniPixel =_centerCam.subtract(movedPoint).normalize();
                     Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
@@ -328,7 +328,7 @@ public class Camera {
             for (int count = 0; count < NUMBER_OF_APERTURE_POINTS; count++) {
 
                 //helper function returns one random point around the center
-                Point movedPoint = movePointRandom(_centerCam, _Vup, _Vright, _apertureSize);
+                Point movedPoint = _centerCam.movePointRandom( _Vup, _Vright, _apertureSize);
 
                 Ray depthRay = constructDepthRay(movedPoint, focalPoint);
                 Color thisPointColor = _rayTracerBase.traceRay(depthRay);
@@ -369,34 +369,7 @@ public class Camera {
         _JaggedEdgesButton = jaggedEdgesButton;
     }
 
-    /***
-     * helper function implementing DRY
-     * @param origin the point for which to find a nearby
-     * @param up direction to move
-     * @param right direction to move
-     * @param aperture distance to move
-     * @return random point in rectangle around the origin
-     */
-    public Point movePointRandom(Point origin, Vector up, Vector right, double aperture) {
-        Random rand = new Random();
-        double moveUp = rand.nextDouble() * aperture;
-        double moveRight = rand.nextDouble() * aperture;
 
-        int upMinus = rand.nextInt() % 2;
-        int rightMinus = rand.nextInt() % 2;
-
-        if (upMinus == 0)
-            upMinus = -1;
-
-        if (rightMinus == 0)
-            rightMinus = -1;
-
-
-        Point movedPoint = origin.add(up.scale(moveUp * upMinus));
-        movedPoint = movedPoint.add(right.scale(moveRight * rightMinus));
-
-        return movedPoint;
-    }
 
     /***
      * this function recieves the parameters of a pixel and returns a point in the middle of the pixel
