@@ -1,8 +1,11 @@
 package lighting;
 
+import geometries.Intersectable;
 import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
+
+import java.util.LinkedList;
 
 /***
  * Interface Light source for managing all types of light
@@ -28,4 +31,11 @@ public interface LightSource {
      * @return the distance
      */
     public double getDistance(Point p);
+
+    /***
+     *
+     * @param lightDirection vector from the object to the light source
+     * @return list of points around the
+     */
+    public LinkedList<Point> findPointsAroundLight(Vector lightDirection, int rootOfMovedLightPoints);
 }

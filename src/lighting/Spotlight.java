@@ -4,12 +4,15 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.LinkedList;
+
 /***
  * class Spotlight is a type of PointLight
  */
 public class Spotlight extends PointLight {
     Vector _direction;
     int _narrowBeam;
+    double _size = 1;
 
     /***
      * constructor for spotlight
@@ -44,5 +47,11 @@ public class Spotlight extends PointLight {
     public Spotlight setNarrowBeam(int narrowBeam) {
         _narrowBeam = narrowBeam;
         return this;
+    }
+
+    @Override
+    public LinkedList<Point> findPointsAroundLight(Vector lightDirection, int root_of_points) {
+        super.setSize(_size);
+        return super.findPointsAroundLight(lightDirection, root_of_points);
     }
 }

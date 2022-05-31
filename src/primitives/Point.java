@@ -1,6 +1,10 @@
 package primitives;
 
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Random;
+
+import static java.lang.Math.max;
 
 /***
  * Class Point is the basic class representing a point of euclidean geometry in cartesian
@@ -8,11 +12,10 @@ import java.util.Objects;
  */
 
 public class Point {
-    public static final Point ZERO = new Point(0,0,0);
+    public static final Point ZERO = new Point(0, 0, 0);
     final Double3 _xyz;
 
-    public Point(double d1, double d2, double d3)
-    {
+    public Point(double d1, double d2, double d3) {
         _xyz = new Double3(d1, d2, d3);
     }
 
@@ -50,7 +53,7 @@ public class Point {
      * @return my vector minus other vector
      */
     public Vector subtract(Point other) {
-        if (other._xyz.equals(_xyz)){
+        if (other._xyz.equals(_xyz)) {
             throw new IllegalArgumentException("Cannot create Vector (0,0,0)");
         }
         return new Vector(
@@ -74,23 +77,79 @@ public class Point {
     }
 
 
-
     /***
      *
      * @param p one of the points for comparison
      * @return returns the distance between two points
      */
-    public double distanceSquared(Point p){
+    public double distanceSquared(Point p) {
         double a = _xyz.d1 - p._xyz.d1;
         double b = _xyz.d2 - p._xyz.d2;
         double c = _xyz.d3 - p._xyz.d3;
 
-        return a*a + b*b + c*c;
-        }
+        return a * a + b * b + c * c;
+    }
 
-        public double distance(Point p){
+    public double distance(Point p) {
         return Math.sqrt(distanceSquared(p));
+    }
+
+    /***
+     * helper function implementing DRY
+     * @param up direction to move
+     * @param right direction to move
+     * @param aperture distance to move
+     * @return random point in rectangle around the origin
+     */
+    public Point movePointRandom(Vector up, Vector right, double aperture) {
+        Random rand = new Random();
+        double moveUp = rand.nextDouble() * aperture;
+        double moveRight = rand.nextDouble() * aperture;
+
+        int upMinus = rand.nextInt() % 2;
+        int rightMinus = rand.nextInt() % 2;
+
+        if (upMinus == 0)
+            upMinus = -1;
+
+        if (rightMinus == 0)
+            rightMinus = -1;
+
+
+        Point movedPoint = this.add(up.scale(moveUp * upMinus));
+        movedPoint = movedPoint.add(right.scale(moveRight * rightMinus));
+
+        return movedPoint;
+    }
+
+    public LinkedList<Point> createListOfMovedPoints(Point edgeOfPixel, Vector _Vup, Vector _Vright, double sizeHOfPixel, double sizeWOfPixel, int numOfMiniPixels) {
+        //move out, this is current point//
+        // out.print(thisPixelPoint);
+        double heightOfMiniPixel = sizeHOfPixel / numOfMiniPixels;
+        double widthOfMiniPixel = sizeWOfPixel / numOfMiniPixels;
+
+        //creating a point in the top left corner that is slightly outside the square so that our loop will bring it
+        Point outerTopLeftCorner = edgeOfPixel.add(_Vup.scale(heightOfMiniPixel * 0.5));
+        outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
+
+        LinkedList<Point> movedPointsList = new LinkedList<>();
+
+        //for each mini pixel
+        for (int row = 1; row <= numOfMiniPixels; row++) {
+            //lowers the point for each row of minipixels
+            Point startPoint = outerTopLeftCorner.add(_Vup.scale(-1 * row * heightOfMiniPixel));
+            for (int column = 1; column <= numOfMiniPixels; column++) {
+                //moved the point to the right for each minipixel
+
+                Point currentPoint = startPoint.add(_Vright.normalize().scale(column * widthOfMiniPixel));
+                //out.print(currentPoint);
+                //?????????should we make movedPointrandom get width and length insead of aparture???????????
+                //creating ray from camera through random point in minipixel
+                //this function should also be in point class
+                Point movedPoint = currentPoint.movePointRandom(_Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
+                movedPointsList.add(movedPoint);
+            }
         }
-
-
+        return movedPointsList;
+    }
 }

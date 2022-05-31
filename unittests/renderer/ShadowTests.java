@@ -1,42 +1,47 @@
 package renderer;
 
-
-import geometries.Intersectable;
-import geometries.Sphere;
-import geometries.Triangle;
-import lighting.AmbientLight;
-import lighting.Spotlight;
 import org.junit.jupiter.api.Test;
+
+import static java.awt.Color.*;
+
+import renderer.ImageWriter;
+import lighting.*;
+import geometries.*;
 import primitives.*;
+import renderer.*;
 import scene.Scene;
 
-import static java.awt.Color.BLUE;
-import static java.awt.Color.WHITE;
+import java.util.LinkedList;
 
 /**
  * Testing basic shadows
  *
  * @author Dan
  */
-public class Shadows {
+public class ShadowTests {
     private Intersectable sphere = new Sphere(new Point(0, 0, -200), 60d) //
-            .setEmission(new Color(BLUE))
+            .setEmission(new Color(BLUE)) //
             .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30));
-    private Material trMaterial = new Material().setKs(0.5).setKs(0.5).setShininess(30);
-
-    private Scene scene = new Scene.SceneBuilder("Test scene").build();
-    private Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
-            .setVPSize(200, 200).setVPDistance(1000) //
-            .setRayTracer(new RayTracerBasic(scene));
+    private Material trMaterial = new Material().setKd(0.5).setKs(0.5).setShininess(30);
 
     /**
      * Helper function for the tests in this module
      */
     void sphereTriangleHelper(String pictName, Triangle triangle, Point spotLocation) {
-        scene._geometries.add(sphere, triangle.setEmission(new Color(BLUE)).setMaterial(trMaterial));
-        scene._lights.add( //
+
+        Geometries geometries = new Geometries(sphere, triangle.setEmission(new Color(BLUE)).setMaterial(trMaterial));
+        LinkedList<LightSource> lights = new LinkedList<>();
+        lights.add( //
                 new Spotlight(new Color(400, 240, 0), spotLocation, new Vector(1, 1, -3)) //
                         .setKl(1E-5).setKq(1.5E-7));
+
+        Scene scene1 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+        Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+                .setVPSize(200, 200).setVPDistance(1000) //
+                .setRayTracer(new RayTracerBasic(scene1));
+
         camera.setImageWriter(new ImageWriter(pictName, 400, 400)) //
                 .renderImage() //
                 .writeToImage();
@@ -98,27 +103,30 @@ public class Shadows {
      */
     @Test
     public void trianglesSphere() {
-
-
-        Scene scene1 = new Scene.SceneBuilder("shadowTrianglesSphere")
-                .setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), new Double3(0.15, 0.15,0.15))).build();
-
-        Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
-                .setVPSize(200, 200).setVPDistance(1000) //
-                .setRayTracer(new RayTracerBasic(scene1));
-
-        scene1._geometries.add( //
+        Geometries geometries = new Geometries(
                 new Triangle(new Point(-150, -150, -115), new Point(150, -150, -135), new Point(75, 75, -150)) //
                         .setMaterial(new Material().setKs(0.8).setShininess(60)), //
                 new Triangle(new Point(-150, -150, -115), new Point(-70, 70, -140), new Point(75, 75, -150)) //
                         .setMaterial(new Material().setKs(0.8).setShininess(60)), //
                 new Sphere(new Point(0, 0, -11), 30d) //
                         .setEmission(new Color(java.awt.Color.BLUE)) //
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)) //
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30))
         );
-        scene1._lights.add( //
+        LinkedList<LightSource> lights = new LinkedList<>();
+
+
+
+        lights.add( //
                 new Spotlight(new Color(700, 400, 400), new Point(40, 40, 115), new Vector(-1, -1, -4)) //
                         .setKl(4E-4).setKq(2E-5));
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), new Double3(0.15)))
+                .setLights(lights).build();
+
+        Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+                .setVPSize(200, 200).setVPDistance(1000) //
+                .setRayTracer(new RayTracerBasic(scene2));
 
         camera.setImageWriter(new ImageWriter("shadowTrianglesSphere", 600, 600)) //
                 .renderImage() //
@@ -126,53 +134,39 @@ public class Shadows {
     }
 
     /**
-     * Test the we made to check the integration of everything so far
-     * this test is not yet complete
+     * Produce a picture of a two triangles lighted by a spot light with a Sphere
+     * producing a shading
      */
     @Test
-    public void originalTest() {
-
-        Point p0 = new Point(1, 1, 0);
-        Point p1 = new Point(1, -1, 0);
-        Point p2 = new Point(1,1,1);
-        Point p3 = new Point(-1,1,0);
-        Point p4 = new Point(0,1,1.5);
-        Point p5 = new Point(-1,1,1);
-        Point p6 = new Point(0,-1,1.5);
-        Point p7 = new Point(1,-1,1);
-
-        Scene scene1 = new Scene.SceneBuilder("shadowTrianglesSphere")
-                .setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), new Double3(0.15, 0.15,0.15))).build();
-
-        Camera camera = new Camera(new Point(2,2,1), new Vector(1, -1, 0), new Vector(-1,-1, 0)) //
-                .setVPSize(5, 5).setVPDistance(1) //
-                .setRayTracer(new RayTracerBasic(scene1));
-
-        scene1._geometries.add( //
-                new Triangle(p0, p1, p2) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
-                new Triangle(p0, p2, p3) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
-                new Triangle(p2, p3, p5) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
-                new Triangle(p1, p2, p7) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.YELLOW),
-                new Triangle(p2, p4, p5) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.RED),
-                new Triangle(p4, p6, p7) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.RED),
-                new Triangle(p7, p2, p4) //
-                        .setMaterial(new Material().setKs(0.8).setShininess(60)).setEmission(Color.RED)//
-
+    public void ourTestSoftShadows1() {
+        Geometries geometries = new Geometries(
+                new Triangle(new Point(-150, -150, -115), new Point(150, -150, -135), new Point(75, 75, -150)) //
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)), //
+                new Triangle(new Point(-150, -150, -115), new Point(-70, 70, -140), new Point(75, 75, -150)) //
+                        .setMaterial(new Material().setKs(0.8).setShininess(60)), //
+                new Sphere(new Point(0, 0, -11), 30d) //
+                        .setEmission(new Color(java.awt.Color.BLUE)) //
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30))
         );
-        scene1._lights.add( //
-                new Spotlight(new Color(WHITE), new Point(2,2,2), new Vector(-1, -1, -1)) //
+        LinkedList<LightSource> lights = new LinkedList<>();
+
+
+
+        lights.add( //
+                new PointLight(new Color(700, 400, 400), new Point(40, 40, 115)) //
                         .setKl(4E-4).setKq(2E-5));
 
-        camera.setImageWriter(new ImageWriter("ours", 600, 600)) //
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), new Double3(0.15)))
+                .setLights(lights).build();
+
+        Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+                .setVPSize(200, 200).setVPDistance(1000) //
+                .setRayTracer(new RayTracerBasic(scene2));
+
+        camera.setImageWriter(new ImageWriter("shadowTrianglesSphere soft shadows", 600, 600)) //
                 .renderImage() //
                 .writeToImage();
     }
 
 }
-

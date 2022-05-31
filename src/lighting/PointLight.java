@@ -4,14 +4,22 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
+import java.util.LinkedList;
+
+import static java.lang.System.out;
+
 /***
  * Point light is a type of light source that is from a certain point
  */
 public class PointLight extends Light implements LightSource {
+
     Point _position;
     double _kC;
     double _kL;
     double _kQ;
+
+    //side of square around lightSource used for soft shadows
+    double _size=0.5;
 
     /***
      * @param intensity intensity of the light
@@ -28,6 +36,7 @@ public class PointLight extends Light implements LightSource {
     /***
      * setters in similar form to builder pattern which return this
      */
+
     public PointLight setKc(double kC) {
         _kC = kC;
         return this;
@@ -43,6 +52,10 @@ public class PointLight extends Light implements LightSource {
         return this;
     }
 
+    public void setSize(double size) {
+        _size = size;
+    }
+
     /***
      * this function returns the intensity of the light calculated based on a given point
      * @param p point on the object
@@ -53,6 +66,7 @@ public class PointLight extends Light implements LightSource {
         double dim = _kC + _kL * p.distance(_position) + _kQ * p.distanceSquared(_position);
         return _intensity.scale(1/dim);
     }
+
 
     /***
      * this function calculates the vector between the light source and the point on the object
@@ -73,5 +87,31 @@ public class PointLight extends Light implements LightSource {
     @Override
     public double getDistance(Point p) {
         return _position.distance(p);
+    }
+
+    /***
+     * this function inside PointLight returns a list of points around the origin
+     * this function uses createListOfMovedPoints in order to achieve the goal
+     * @param lightDirection vector from the object to the light source
+     * @param root_of_points this number is used to calculate how many points to create
+     * @return the list of points
+     */
+    @Override
+    public LinkedList<Point> findPointsAroundLight(Vector lightDirection, int root_of_points) {
+
+        Vector U; //vup
+        U = new Vector(0, -lightDirection.getXyz().getD3(), lightDirection.getXyz().getD2()).normalize();
+        Vector V; //vright
+        //not sure about scaling with -1??????????????????????
+        V = U.crossProduct(lightDirection).normalize();
+
+        double height=_size;
+        double width=_size;
+
+        Point edgeOfPixel = _position.add(V.scale(-0.5*_size));
+        edgeOfPixel=edgeOfPixel.add(U.scale(0.5*_size));
+
+        LinkedList<Point> pointsAroundLight= _position.createListOfMovedPoints(edgeOfPixel, U, V, height, width, root_of_points);
+        return pointsAroundLight;
     }
 }

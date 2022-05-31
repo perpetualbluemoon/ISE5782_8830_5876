@@ -1,5 +1,6 @@
 package renderer;
 
+import lighting.LightSource;
 import org.junit.jupiter.api.Test;
 
 import lighting.AmbientLight;
@@ -7,6 +8,9 @@ import geometries.*;
 import primitives.*;
 import renderer.*;
 import scene.Scene;
+
+import java.util.LinkedList;
+
 import static java.awt.Color.*;
 
 /**
@@ -22,18 +26,23 @@ public class RenderTests {
      */
     @Test
     public void basicRenderTwoColorTest() {
-        Scene scene = new Scene.SceneBuilder("Test scene")//
-                .setAmbientLight(new AmbientLight(new Color(255, 191, 191), //
-                        new Double3(1, 1, 1))) //
-                .setBackground(new Color(75, 127, 90)).build();
 
-        scene._geometries.add(new Sphere(new Point(0, 0, -100), 50d),
+        Geometries geometries = new Geometries(
+                new Sphere(new Point(0, 0, -100), 50d),
                 new Triangle(new Point(-100, 0, -100), new Point(0, 100, -100), new Point(-100, 100, -100)), // up
                 // left
                 new Triangle(new Point(-100, 0, -100), new Point(0, -100, -100), new Point(-100, -100, -100)), // down
                 // left
-                new Triangle(new Point(100, 0, -100), new Point(0, -100, -100), new Point(100, -100, -100))); // down
-        // right
+                new Triangle(new Point(100, 0, -100), new Point(0, -100, -100), new Point(100, -100, -100)) // down
+                // right
+        );
+
+        Scene scene = new Scene.SceneBuilder("Test scene").setGeometries(geometries)//
+                .setAmbientLight(new AmbientLight(new Color(255, 191, 191), //
+                        new Double3(1, 1, 1))) //
+                .setBackground(new Color(75, 127, 90)).build();
+
+
         Camera camera = new Camera(Point.ZERO, new Vector(0, 0, -1), new Vector(0, 1, 0)) //
                 .setVPDistance(100) //
                 .setVPSize(500, 500) //
@@ -52,10 +61,8 @@ public class RenderTests {
      */
     @Test
     public void basicRenderMultiColorTest() {
-        Scene scene = new Scene.SceneBuilder("Test scene")//
-                .setAmbientLight(new AmbientLight(new Color(WHITE), new Double3(0.2))).build(); //
 
-        scene._geometries.add( //
+        Geometries geometries = new Geometries(
                 new Sphere(new Point(0, 0, -100), 50),
                 // up left
                 new Triangle(new Point(-100, 0, -100), new Point(0, 100, -100), new Point(-100, 100, -100))
@@ -66,6 +73,10 @@ public class RenderTests {
                 // down right
                 new Triangle(new Point(100, 0, -100), new Point(0, -100, -100), new Point(100, -100, -100))
                         .setEmission(new Color(BLUE)));
+
+        Scene scene = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setAmbientLight(new AmbientLight(new Color(WHITE), new Double3(0.2))).build(); //
+
 
         Camera camera = new Camera(Point.ZERO, new Vector(0, 0, -1), new Vector(0, 1, 0)) //
                 .setVPDistance(100) //
