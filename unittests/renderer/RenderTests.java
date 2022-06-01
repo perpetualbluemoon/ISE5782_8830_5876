@@ -1,15 +1,15 @@
 package renderer;
 
-import lighting.LightSource;
-import org.junit.jupiter.api.Test;
-
+import geometries.Geometries;
+import geometries.Sphere;
+import geometries.Triangle;
 import lighting.AmbientLight;
-import geometries.*;
-import primitives.*;
-import renderer.*;
+import org.junit.jupiter.api.Test;
+import primitives.Color;
+import primitives.Double3;
+import primitives.Point;
+import primitives.Vector;
 import scene.Scene;
-
-import java.util.LinkedList;
 
 import static java.awt.Color.*;
 
@@ -88,4 +88,5 @@ public class RenderTests {
         camera.printGrid(100, new Color(WHITE));
         camera.writeToImage();
     }
+
 }

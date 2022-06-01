@@ -1,12 +1,13 @@
 package renderer;
 
-import primitives.*;
+import primitives.Color;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
+import java.util.LinkedList;
 import java.util.MissingResourceException;
-import java.util.Random;
 
-import static java.lang.Math.max;
-import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
@@ -36,7 +37,7 @@ public class Camera {
     private double _focalLength = 2;
     private double _apertureSize = 0.01;
 
-    private static final int NUMBER_OF_APERTURE_POINTS = 10;
+    private static final int NUMBER_OF_APERTURE_POINTS = 3;
 
 
     //ON/OFF button default is off
@@ -271,21 +272,11 @@ public class Camera {
             Point outerTopLeftCorner = thisPixelPoint.add(_Vup.scale(heightOfMiniPixel * 0.5));
             outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
 
-
+            LinkedList<Point> minipixelPoints=thisPixelPoint.createListOfMovedPoints(outerTopLeftCorner,_Vup,_Vright,_heightVP / _imageWriter.getNy()
+                    ,_widthVP / _imageWriter.getNx(), NUMBER_OF_MINIPIXELS);
             //for each mini pixel
-            for (int row = 1; row <= NUMBER_OF_MINIPIXELS; row++) {
-                //lowers the point for each row of minipixels
-                Point startPoint =  outerTopLeftCorner.add(_Vup.scale( -1*row * heightOfMiniPixel));
-                for (int column = 1; column <= NUMBER_OF_MINIPIXELS; column++) {
-                    //moved the point to the right for each minipixel
+                    for(Point movedPoint:minipixelPoints){
 
-                    Point currentPoint = startPoint.add(_Vright.normalize().scale(column * widthOfMiniPixel));
-                    //out.print(currentPoint);
-                    //?????????should we make movedPointrandom get width and length insead of aparture???????????
-                    //creating ray from camera through random point in minipixel
-
-                    Point movedPoint = currentPoint.movePointRandom( _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
-                    //Point movedPoint=currentPoint;
                     Vector rayDirectionFromMiniPixel =_centerCam.subtract(movedPoint).normalize();
                     Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
 
@@ -297,8 +288,8 @@ public class Camera {
                     colorY += thisPointColor.getColor().getGreen();
                     colorZ += thisPointColor.getColor().getBlue();
                     //out.print(_centerCam.subtract(movedPoint).normalize());
-                }
-            }
+                  }
+
 
             //calculating the average - dividing by the number of mini pixels squared because of the double loop
 
@@ -325,10 +316,14 @@ public class Camera {
 
             //     construct depth ray from the aperture point to the focal point
             //     get the color using trace ray and add to list
-            for (int count = 0; count < NUMBER_OF_APERTURE_POINTS; count++) {
-
+            double heightOfMiniPixel = _apertureSize/NUMBER_OF_APERTURE_POINTS;
+            double widthOfMiniPixel = _apertureSize/NUMBER_OF_APERTURE_POINTS;
+            Point outerTopLeftCorner = _centerCam.add(_Vup.scale(heightOfMiniPixel * 0.5));
+            outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
                 //helper function returns one random point around the center
-                Point movedPoint = _centerCam.movePointRandom( _Vup, _Vright, _apertureSize);
+                LinkedList<Point> listPixelPoints= _centerCam.createListOfMovedPoints(outerTopLeftCorner, _Vup, _Vright, _apertureSize
+                        ,_apertureSize,NUMBER_OF_APERTURE_POINTS);
+            for (Point movedPoint:listPixelPoints) {
 
                 Ray depthRay = constructDepthRay(movedPoint, focalPoint);
                 Color thisPointColor = _rayTracerBase.traceRay(depthRay);
@@ -340,9 +335,9 @@ public class Camera {
             }
             // out of the for: calculate average of x,y,z for the colors (x,y,z)
 
-            double averageX = colorX / NUMBER_OF_APERTURE_POINTS;
-            double averageY = colorY / NUMBER_OF_APERTURE_POINTS;
-            double averageZ = colorZ / NUMBER_OF_APERTURE_POINTS;
+            double averageX = colorX /( NUMBER_OF_APERTURE_POINTS*NUMBER_OF_APERTURE_POINTS);
+            double averageY = colorY / ( NUMBER_OF_APERTURE_POINTS*NUMBER_OF_APERTURE_POINTS);
+            double averageZ = colorZ / ( NUMBER_OF_APERTURE_POINTS*NUMBER_OF_APERTURE_POINTS);
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;

@@ -1,17 +1,20 @@
 package renderer;
 
+import geometries.Geometries;
+import geometries.Intersectable;
+import geometries.Sphere;
+import geometries.Triangle;
+import lighting.AmbientLight;
+import lighting.LightSource;
+import lighting.PointLight;
+import lighting.Spotlight;
 import org.junit.jupiter.api.Test;
-
-import static java.awt.Color.*;
-
-import renderer.ImageWriter;
-import lighting.*;
-import geometries.*;
 import primitives.*;
-import renderer.*;
 import scene.Scene;
 
 import java.util.LinkedList;
+
+import static java.awt.Color.BLUE;
 
 /**
  * Testing basic shadows
@@ -162,7 +165,7 @@ public class ShadowTests {
 
         Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
                 .setVPSize(200, 200).setVPDistance(1000) //
-                .setRayTracer(new RayTracerBasic(scene2));
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(true, 10));
 
         camera.setImageWriter(new ImageWriter("shadowTrianglesSphere soft shadows", 600, 600)) //
                 .renderImage() //
