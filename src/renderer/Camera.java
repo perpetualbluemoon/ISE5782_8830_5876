@@ -8,6 +8,7 @@ import primitives.Vector;
 import java.util.LinkedList;
 import java.util.MissingResourceException;
 
+import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
@@ -25,7 +26,6 @@ public class Camera {
     private static boolean _MultiThreadingButton = false;
     private static int NUM_OF_THREADS = 1;
     private double _debugPrint = 0;
-
 
 
     //information about the view plane
@@ -51,6 +51,8 @@ public class Camera {
     private boolean _JaggedEdgesButton = false;
     //number of minipixels is used for both height and width of the minipixel for simplicity
     private static int NUMBER_OF_MINIPIXELS = 3;
+
+    public static int MAX_RECURSION = 3;
 
 
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
@@ -169,7 +171,7 @@ public class Camera {
             throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
         if (_MultiThreadingButton) {
             Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), _debugPrint); //debug print is print interval
-            int threadsCount=3;
+            int threadsCount = 3;
             while (threadsCount-- > 0) {
                 new Thread(() -> {
                     for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone()) {
@@ -180,8 +182,7 @@ public class Camera {
             }
             Pixel.waitToFinish();
 
-        }
-        else {
+        } else {
             //for every row
             for (int i = 0; i < _imageWriter.getNy(); i++) {
                 //for every column
@@ -269,7 +270,7 @@ public class Camera {
      * @param i the row of the pixel
      * @return color of the pixel
      */
-    public Color castRay(int j, int i) {
+    public Color castRayOld(int j, int i) {
 
         if ((!_depthButton) && (!_JaggedEdgesButton)) { //default code
             Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
@@ -440,5 +441,154 @@ public class Camera {
         //?? assuming debug print is the same as print interval
         _debugPrint = v;
         return this;
+    }
+
+    /***
+     * this function casts a ray from the camera through the current pixel and returns the color of that pixel
+     * @param j the column of the pixel
+     * @param i the row of the pixel
+     * @return color of the pixel
+     */
+    public Color castRay(int j, int i) {
+
+        if ((!_depthButton) && (!_JaggedEdgesButton)) { //default code
+            Ray thisPixelRay = constructRay(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+
+            Color thisPixelColor = _rayTracerBase.traceRay(thisPixelRay);
+
+            return thisPixelColor;
+        }
+        if (_JaggedEdgesButton) {
+            //inital color for average calculation
+            double colorX = 0;
+            double colorY = 0;
+            double colorZ = 0;
+
+            Point thisPixelPoint = createMiddlePixel(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
+            // out.print(thisPixelPoint);
+
+            //creating a point in the top left corner that is slightly outside the square so that our loop will bring it
+            Point topLeftCorner = thisPixelPoint;
+            Color topLeftColor = _rayTracerBase.traceRay(new Ray(_centerCam, topLeftCorner.subtract(_centerCam).normalize()));
+
+
+            Point bottomRightCorner = thisPixelPoint.add(_Vup.scale((_heightVP / _imageWriter.getNy()) * -1));
+            bottomRightCorner = bottomRightCorner.add(_Vright.scale((_widthVP / _imageWriter.getNx())));
+            Color bottomRightColor = _rayTracerBase.traceRay(new Ray(_centerCam, bottomRightCorner.subtract(_centerCam).normalize()));
+
+            //out.print(bottomRightColor+"\n");
+            Color fullPixelColor = recursivePixelColor(topLeftCorner, topLeftColor, bottomRightCorner, bottomRightColor,
+                    _Vup, _Vright, "left", 0, (_heightVP / _imageWriter.getNy()), (_widthVP / _imageWriter.getNx()));
+
+            return fullPixelColor;
+
+
+        }
+        return Color.BLACK;
+    }
+
+    /***
+     *
+     * @param upperCorner upper left or right corner of pixel section
+     * @param upperColor color of upper corner
+     * @param bottomCorner bottom left or right corner of pixel section
+     * @param bottomColor color of bottom corner
+     * @param Vup vector going up (camera coordinates)
+     * @param Vright vector going right (camera coordinates)
+     * @param leftRight whether upper corner is to the left or the right of the bottom corner
+     * @param recursionNum number of the current recursion
+     * @return Color of the pixel section
+     */
+    public Color recursivePixelColor(Point upperCorner, Color upperColor, Point bottomCorner, Color bottomColor,
+                                     Vector Vup, Vector Vright, String leftRight, int recursionNum, double widthOfPixelSection,
+                                     double heightOfPixelSection) {
+
+        if (recursionNum == MAX_RECURSION)
+            return upperColor;
+
+       // out.print(recursionNum);
+
+        Point leftTopPoint;
+        Point rightTopPoint;
+        Point leftBottomPoint;
+        Point rightBottomPoint;
+        Point middlePoint;
+
+        Color leftTopColor;
+        Color rightTopColor;
+        Color leftBottomColor;
+        Color rightBottomColor;
+        //we calculated colors inside because we dont know who is upper yet
+        if (leftRight == "left") {
+            middlePoint = upperCorner.add(_Vup.scale(heightOfPixelSection * -0.5));
+            middlePoint = middlePoint.add(_Vright.scale(widthOfPixelSection * 0.5)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+
+            rightBottomPoint = bottomCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            leftTopPoint = upperCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            rightTopPoint = upperCorner.add(_Vright.scale(widthOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            leftBottomPoint = upperCorner.add(_Vup.scale(-1 * heightOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+
+            leftTopColor = upperColor;
+            rightBottomColor = bottomColor;
+            rightTopColor = _rayTracerBase.traceRay(new Ray(_centerCam, rightTopPoint.subtract(_centerCam).normalize()));
+            //if(!rightTopColor.equals(Color.MAGENTA)){
+              //  out.print(rightTopColor);
+            //}
+            leftBottomColor = _rayTracerBase.traceRay(new Ray(_centerCam, leftBottomPoint.subtract(_centerCam).normalize()));
+
+        } else {
+            middlePoint = upperCorner.add(_Vup.scale(heightOfPixelSection * -0.5));
+            middlePoint = middlePoint.add(_Vright.scale(widthOfPixelSection * -0.5)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+
+            leftBottomPoint = bottomCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            rightTopPoint = upperCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            leftTopPoint = upperCorner.add(_Vright.scale(-1 * widthOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            rightBottomPoint = upperCorner.add(_Vup.scale(-1 * heightOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+
+
+            rightTopColor = upperColor;
+            leftBottomColor = bottomColor;
+            leftTopColor = _rayTracerBase.traceRay(new Ray(_centerCam, leftTopPoint.subtract(_centerCam).normalize()));
+            rightBottomColor = _rayTracerBase.traceRay(new Ray(_centerCam, rightBottomPoint.subtract(_centerCam).normalize()));
+        }
+
+
+
+
+        Color middleColor = _rayTracerBase.traceRay(new Ray(_centerCam, middlePoint.subtract(_centerCam).normalize()));
+       // if(!middleColor.equals(Color.MAGENTA)){
+         // out.print(middleColor);
+       // }
+        Color topRight = middleColor;
+        if (!middleColor.equals(rightTopColor)) {
+
+            topRight = recursivePixelColor(rightTopPoint, rightTopColor, middlePoint, middleColor, Vup, Vright, "right",
+                    recursionNum + 1, widthOfPixelSection / 2, heightOfPixelSection / 2);
+        // out.print(topRight);
+        }
+
+        Color topLeft = middleColor;
+        if (!middleColor.equals(leftTopColor)) {
+            topLeft = recursivePixelColor(leftTopPoint, leftTopColor, middlePoint, middleColor, Vup, Vright, "left",
+                    recursionNum + 1, widthOfPixelSection / 2, heightOfPixelSection / 2);
+        }
+        //great
+        Color bottomRight = middleColor;
+        if (!middleColor.equals(rightBottomColor)) {
+            bottomRight = recursivePixelColor(middlePoint, middleColor, rightBottomPoint, rightBottomColor, Vup, Vright, "left",
+                    recursionNum + 1, widthOfPixelSection / 2, heightOfPixelSection / 2);
+        }
+
+        Color bottomLeft = middleColor;
+        if (!middleColor.equals(leftBottomColor)) {
+            bottomLeft = recursivePixelColor(middlePoint, middleColor, leftBottomPoint, leftBottomColor, Vup, Vright, "right",
+                    recursionNum + 1, widthOfPixelSection / 2, heightOfPixelSection / 2);
+        }
+
+        Color totalColor = topRight.add(topLeft, bottomRight, bottomLeft);
+        //instead of dividing every single one
+
+
+        return  totalColor.scale(0.25);
     }
 }
