@@ -26,7 +26,7 @@ public class RayTracerBasic extends RayTracerBase {
     private static final double INITIAL_K = 1.0;
 
     //ON/OFF button default is off
-    private boolean _softShadowsButton = true;
+    private boolean _softShadowsButton = false;
     //root of number of points around the lightsource
     private static int ROOT_OF_MOVED_LIGHT_POINTS = 20;
 

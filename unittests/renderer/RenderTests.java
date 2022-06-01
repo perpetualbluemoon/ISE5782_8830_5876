@@ -12,6 +12,7 @@ import scene.Scene;
 import java.util.LinkedList;
 
 import static java.awt.Color.*;
+import static java.lang.System.out;
 
 /**
  * Test rendering a basic image
