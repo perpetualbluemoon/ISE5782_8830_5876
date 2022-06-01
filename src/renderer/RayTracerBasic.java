@@ -5,11 +5,9 @@ import lighting.LightSource;
 import primitives.*;
 import scene.Scene;
 
-
 import java.util.LinkedList;
 import java.util.List;
 
-import static java.lang.System.out;
 import static primitives.Util.alignZero;
 
 

@@ -1,12 +1,13 @@
 package renderer;
 
-import primitives.*;
+import primitives.Color;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
+import java.util.LinkedList;
 import java.util.MissingResourceException;
-import java.util.Random;
 
-import static java.lang.Math.max;
-import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
@@ -19,6 +20,13 @@ public class Camera {
     private Vector _Vup;//x
     private Vector _Vto;//z
     private Point _centerCam;
+
+
+    private static boolean _MultiThreadingButton = false;
+    private static int NUM_OF_THREADS = 1;
+    private double _debugPrint = 0;
+
+
 
     //information about the view plane
     private double _heightVP;
@@ -36,7 +44,7 @@ public class Camera {
     private double _focalLength = 2;
     private double _apertureSize = 0.01;
 
-    private static final int NUMBER_OF_APERTURE_POINTS = 10;
+    private static final int NUMBER_OF_APERTURE_POINTS = 3;
 
 
     //ON/OFF button default is off
@@ -159,13 +167,26 @@ public class Camera {
         //information about creation of the final image
         if ((_imageWriter == null) || (_rayTracerBase == null))
             throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+        if (_MultiThreadingButton) {
+            Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), _debugPrint); //debug print is print interval
+            int threadsCount=3;
+            while (threadsCount-- > 0) {
+                new Thread(() -> {
+                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone())
+                        castRay(pixel.col, pixel.row);
+                }).start();
+            }
+            Pixel.waitToFinish();
 
-        //for every row
-        for (int i = 0; i < _imageWriter.getNy(); i++) {
-            //for every column
-            for (int j = 0; j < _imageWriter.getNx(); j++) {
-                Color thisPixelColor = castRay(j, i);
-                _imageWriter.writePixel(j, i, thisPixelColor);
+        }
+        else {
+            //for every row
+            for (int i = 0; i < _imageWriter.getNy(); i++) {
+                //for every column
+                for (int j = 0; j < _imageWriter.getNx(); j++) {
+                    Color thisPixelColor = castRay(j, i);
+                    _imageWriter.writePixel(j, i, thisPixelColor);
+                }
             }
         }
         return this;
@@ -271,34 +292,24 @@ public class Camera {
             Point outerTopLeftCorner = thisPixelPoint.add(_Vup.scale(heightOfMiniPixel * 0.5));
             outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
 
-
+            LinkedList<Point> minipixelPoints = thisPixelPoint.createListOfMovedPoints(outerTopLeftCorner, _Vup, _Vright, _heightVP / _imageWriter.getNy()
+                    , _widthVP / _imageWriter.getNx(), NUMBER_OF_MINIPIXELS);
             //for each mini pixel
-            for (int row = 1; row <= NUMBER_OF_MINIPIXELS; row++) {
-                //lowers the point for each row of minipixels
-                Point startPoint =  outerTopLeftCorner.add(_Vup.scale( -1*row * heightOfMiniPixel));
-                for (int column = 1; column <= NUMBER_OF_MINIPIXELS; column++) {
-                    //moved the point to the right for each minipixel
+            for (Point movedPoint : minipixelPoints) {
 
-                    Point currentPoint = startPoint.add(_Vright.normalize().scale(column * widthOfMiniPixel));
-                    //out.print(currentPoint);
-                    //?????????should we make movedPointrandom get width and length insead of aparture???????????
-                    //creating ray from camera through random point in minipixel
+                Vector rayDirectionFromMiniPixel = _centerCam.subtract(movedPoint).normalize();
+                Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
 
-                    Point movedPoint = currentPoint.movePointRandom( _Vup, _Vright, max(widthOfMiniPixel, heightOfMiniPixel));
-                    //Point movedPoint=currentPoint;
-                    Vector rayDirectionFromMiniPixel =_centerCam.subtract(movedPoint).normalize();
-                    Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
-
-                    //tracing ray for color
-                    Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
-                    //out.print(thisPointColor);
-                    //adding the colors for average
-                    colorX += thisPointColor.getColor().getRed();
-                    colorY += thisPointColor.getColor().getGreen();
-                    colorZ += thisPointColor.getColor().getBlue();
-                    //out.print(_centerCam.subtract(movedPoint).normalize());
-                }
+                //tracing ray for color
+                Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
+                //out.print(thisPointColor);
+                //adding the colors for average
+                colorX += thisPointColor.getColor().getRed();
+                colorY += thisPointColor.getColor().getGreen();
+                colorZ += thisPointColor.getColor().getBlue();
+                //out.print(_centerCam.subtract(movedPoint).normalize());
             }
+
 
             //calculating the average - dividing by the number of mini pixels squared because of the double loop
 
@@ -325,10 +336,14 @@ public class Camera {
 
             //     construct depth ray from the aperture point to the focal point
             //     get the color using trace ray and add to list
-            for (int count = 0; count < NUMBER_OF_APERTURE_POINTS; count++) {
-
-                //helper function returns one random point around the center
-                Point movedPoint = _centerCam.movePointRandom( _Vup, _Vright, _apertureSize);
+            double heightOfMiniPixel = _apertureSize / NUMBER_OF_APERTURE_POINTS;
+            double widthOfMiniPixel = _apertureSize / NUMBER_OF_APERTURE_POINTS;
+            Point outerTopLeftCorner = _centerCam.add(_Vup.scale(heightOfMiniPixel * 0.5));
+            outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
+            //helper function returns one random point around the center
+            LinkedList<Point> listPixelPoints = _centerCam.createListOfMovedPoints(outerTopLeftCorner, _Vup, _Vright, _apertureSize
+                    , _apertureSize, NUMBER_OF_APERTURE_POINTS);
+            for (Point movedPoint : listPixelPoints) {
 
                 Ray depthRay = constructDepthRay(movedPoint, focalPoint);
                 Color thisPointColor = _rayTracerBase.traceRay(depthRay);
@@ -340,9 +355,9 @@ public class Camera {
             }
             // out of the for: calculate average of x,y,z for the colors (x,y,z)
 
-            double averageX = colorX / NUMBER_OF_APERTURE_POINTS;
-            double averageY = colorY / NUMBER_OF_APERTURE_POINTS;
-            double averageZ = colorZ / NUMBER_OF_APERTURE_POINTS;
+            double averageX = colorX / (NUMBER_OF_APERTURE_POINTS * NUMBER_OF_APERTURE_POINTS);
+            double averageY = colorY / (NUMBER_OF_APERTURE_POINTS * NUMBER_OF_APERTURE_POINTS);
+            double averageZ = colorZ / (NUMBER_OF_APERTURE_POINTS * NUMBER_OF_APERTURE_POINTS);
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;
@@ -368,7 +383,6 @@ public class Camera {
     public void setJaggedEdgesButton(boolean jaggedEdgesButton) {
         _JaggedEdgesButton = jaggedEdgesButton;
     }
-
 
 
     /***
@@ -411,5 +425,18 @@ public class Camera {
         }
 
         return Pij;
+    }
+
+    public Camera setMultithreading(int i) {
+        if (i > 1)
+            _MultiThreadingButton = true;
+        NUM_OF_THREADS = i;
+        return this;
+    }
+
+    public Camera setDebugPrint(double v) {
+        //?? assuming debug print is the same as print interval
+        _debugPrint = v;
+        return this;
     }
 }
