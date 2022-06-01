@@ -172,8 +172,10 @@ public class Camera {
             int threadsCount=3;
             while (threadsCount-- > 0) {
                 new Thread(() -> {
-                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone())
-                        castRay(pixel.col, pixel.row);
+                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone()) {
+                        Color thisPixelColor = castRay(pixel.col, pixel.row);
+                        _imageWriter.writePixel(pixel.col, pixel.row, thisPixelColor);
+                    }
                 }).start();
             }
             Pixel.waitToFinish();
