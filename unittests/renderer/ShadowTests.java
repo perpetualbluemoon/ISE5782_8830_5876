@@ -201,11 +201,11 @@ public class ShadowTests {
 
         Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
                 .setVPSize(200, 200).setVPDistance(1000) //
-                .setRayTracer(new RayTracerBasic(scene2));
+                .setRayTracer(new RayTracerBasic(scene2)).setAdaptiveSuperSampling(false);
 
         camera.setJaggedEdgesButton(true, 9);
 
-        camera.setImageWriter(new ImageWriter("shadowTrianglesSphere jagged edges on", 600, 600)) //
+        camera.setImageWriter(new ImageWriter("shadowTrianglesSphere jagged edges off", 600, 600)) //
                 .renderImage() //
                 .writeToImage();
     }

@@ -12,7 +12,9 @@ import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
- * class of camera helps constructing rays through view plane pixels and find intersections
+ * class of camera helps construct rays through view plane pixels and find intersections
+ * it also implements depth of field and jagged edges improvements from part 8
+ * as well as multi-threading and adaptive super-sampling from part 9
  */
 public class Camera {
 
@@ -21,12 +23,6 @@ public class Camera {
     private Vector _Vup;//x
     private Vector _Vto;//z
     private Point _centerCam;
-
-
-    private static boolean _MultiThreadingButton = false;
-    private static int NUM_OF_THREADS = 1;
-    private double _debugPrint = 0;
-
 
     //information about the view plane
     private double _heightVP;
@@ -37,25 +33,42 @@ public class Camera {
     private ImageWriter _imageWriter; //creates the photo
     private RayTracerBase _rayTracerBase;
 
+
+    //feature of part 8
     //ON/OFF button default is off
     private boolean _depthButton = false;
-
     //focal length
     private double _focalLength = 2;
     private double _apertureSize = 0.01;
-
     private static final int NUMBER_OF_APERTURE_POINTS = 3;
 
-
+    //feature of part 8
     //ON/OFF button default is off
     private boolean _JaggedEdgesButton = false;
     //number of minipixels is used for both height and width of the minipixel for simplicity
     private static int NUMBER_OF_MINIPIXELS = 3;
 
+
+    //feature of part 9
+    //ON/OFF button default is off
+    private static boolean _MultiThreadingButton = false;
+    private static int NUM_OF_THREADS = 1;
+    private double _debugPrint = 0;
+
+    //feature of part 9
+    //ON/OFF button default is off
+    private boolean _adaptiveSuperSampling = false;
     public static int MAX_RECURSION = 3;
 
 
     //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
+
+    /***
+     * this constructor receives vup and vto and creates vright, creates an object of class camera
+     * @param centerCam the center point of the camera
+     * @param vto direction the camera is facing
+     * @param vup orientation of the camera
+     */
     public Camera(Point centerCam, Vector vto, Vector vup) {
         _Vup = vup.normalize();
         _Vto = vto.normalize();
@@ -73,7 +86,7 @@ public class Camera {
         _centerCam = centerCam;
     }
 
-    //setters
+    //setters similar to builder pattern return the object in order to string together these operations
 
     /***function setter
      *@param distanceVPToCam for distance of view plane from camera
@@ -107,7 +120,7 @@ public class Camera {
     }
 
     /***
-     * set ray tracer
+     * set ray tracer base
      * @param rayTracerBase finds color
      * @return the camera
      */
@@ -116,11 +129,33 @@ public class Camera {
         return this;
     }
 
+    /***
+     * set ray tracer
+     * @param rayTracerBasic used to trace rays and find color
+     * @return the camera
+     */
+    public Camera setRayTracer(RayTracerBasic rayTracerBasic) {
+        _rayTracerBase = rayTracerBasic;
+        return this;
+    }
+
+    /***
+     * set focal length is used as part of the depth of field improvement (part 8)
+     * this determines which items in the scene will be in focus
+     * @param focalLength the distance of the focal plane from the camera
+     * @return the camera
+     */
     public Camera setFocalLength(double focalLength) {
         _focalLength = focalLength;
         return this;
     }
 
+    /***
+     * aperture size is used as part of the depth of field improvement (part 8)
+     * this determines how blurry the items which are not in focus will be
+     * @param apertureSize a small double indicating how blurry items should be when not in focus
+     * @return the camera
+     */
     public Camera setApertureSize(double apertureSize) {
         _apertureSize = apertureSize;
         return this;
@@ -155,9 +190,11 @@ public class Camera {
         return _distanceVPToCam;
     }
 
+    //basic camera functions
 
     /***
-     * function render Image checks that all the fields are initialized
+     * function render Image checks that all the fields are initialized and then renders the image
+     * this function uses some of the on/off buttons to determine which functions to call and in what manner
      */
     public Camera renderImage() {
         //coordinates of the camera are not null
@@ -169,26 +206,41 @@ public class Camera {
         //information about creation of the final image
         if ((_imageWriter == null) || (_rayTracerBase == null))
             throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+        //implementing the multi-threading time improvement of part 9
         if (_MultiThreadingButton) {
             Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), _debugPrint); //debug print is print interval
             int threadsCount = 3;
             while (threadsCount-- > 0) {
                 new Thread(() -> {
                     for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone()) {
-                        Color thisPixelColor = castRay(pixel.col, pixel.row);
-                        _imageWriter.writePixel(pixel.col, pixel.row, thisPixelColor);
+                        if(_adaptiveSuperSampling) {
+                            //implementing the adaptive super sampling time improvement of part 9
+                            Color thisPixelColor = castRay(pixel.col, pixel.row);
+                            _imageWriter.writePixel(pixel.col, pixel.row, thisPixelColor);
+                        }
+                        else{
+                            Color thisPixelColor = castRayOld(pixel.col, pixel.row);
+                            _imageWriter.writePixel(pixel.col, pixel.row, thisPixelColor);
+                        }
+
                     }
                 }).start();
             }
             Pixel.waitToFinish();
 
-        } else {
+        } else { //when not using multithreading
             //for every row
             for (int i = 0; i < _imageWriter.getNy(); i++) {
                 //for every column
                 for (int j = 0; j < _imageWriter.getNx(); j++) {
-                    Color thisPixelColor = castRay(j, i);
-                    _imageWriter.writePixel(j, i, thisPixelColor);
+                    if(_adaptiveSuperSampling) { //implementing adaptive super sampling (part 9)
+                        Color thisPixelColor = castRay(j, i);
+                        _imageWriter.writePixel(j, i, thisPixelColor);
+                    }
+                    else{
+                        Color thisPixelColor = castRayOld(j, i);
+                        _imageWriter.writePixel(j, i, thisPixelColor);
+                    }
                 }
             }
         }
@@ -226,10 +278,7 @@ public class Camera {
         _imageWriter.writeToImage();
     }
 
-    public Camera setRayTracer(RayTracerBasic rayTracerBasic) {
-        _rayTracerBase = rayTracerBasic;
-        return this;
-    }
+
 
     /***
      * function creates a ray through the pixel
@@ -261,11 +310,54 @@ public class Camera {
         return depthRay;
     }
 
+    /***
+     * this function recieves the parameters of a pixel and returns a point in the middle of the pixel
+     * @param nX number of columns
+     * @param nY number of rows
+     * @param j current column
+     * @param i current row
+     * @return middle of pixel
+     */
+    public Point createMiddlePixel(int nX, int nY, int j, int i) {
+        // calculating center point
+        //you cannot use getPoint because there is no ray
+        //𝑃𝑐 = 𝑃0 + 𝑑 ∙ 𝑣
+        //finding middle of view plane
+        Point pc = _centerCam.add(_Vto.scale(_distanceVPToCam));
+        //𝑅𝑦 = ℎ/𝑁𝑦{
+        //        //
+        //𝑅𝑥 = 𝑤/𝑁x
+        //calculating size of pixels for width and height
+        double ry = _heightVP / nY;
+        double rx = _widthVP / nX;
+        //finding how much to move up and right to find wanted pixel
+        double xj = (j - ((nX - 1) / 2.0)) * rx;
+        double yi = -(i - ((nY - 1) / 2.0)) * ry;
+
+        //Pij = Pc + (xj*Vright + yi*Vup)
+        //𝑦𝑖 = −(𝑖 – (𝑁𝑦 − 1)/2) ∙ 𝑅𝑦
+        // 𝑥𝑗 = (𝑗 – (𝑁𝑥 − 1)/2) ∙ 𝑅x
+        // finding point pij wanted pixel according to the formula
+        //doing it in parts to prevent addition of zero
+        Point Pij = pc;
+        if (!isZero(xj)) {
+            //xj*Vright
+            Pij = Pij.add(_Vright.scale(xj));
+        }
+        if (!isZero(yi)) {
+            //yi*Vup
+            Pij = Pij.add(_Vup.scale(yi));
+        }
+
+        return Pij;
+    }
+
 
     /***
      * cast ray is the main function in which the modifications of part 8 are made
      * for this reason, there are multiple clauses checking which fix we are currently in
      * this function casts a ray from the camera through the current pixel and returns the color of that pixel
+     * this is called "old" because it is called when the adaptive super sampling is not used
      * @param j the column of the pixel
      * @param i the row of the pixel
      * @return color of the pixel
@@ -368,83 +460,11 @@ public class Camera {
         return Color.BLACK;
     }
 
-    public void setDepthButton(boolean button, double apertureSize, double focalLength) {
-        _depthButton = button;
-        _apertureSize = apertureSize;
-        _focalLength = focalLength;
-    }
-
-    public void setDepthButton(boolean depthButton) {
-        _depthButton = depthButton;
-    }
-
-    public void setJaggedEdgesButton(boolean jaggedEdgesButton, int numberOfMiniPixels) {
-        _JaggedEdgesButton = jaggedEdgesButton;
-        NUMBER_OF_MINIPIXELS = numberOfMiniPixels;
-    }
-
-    public void setJaggedEdgesButton(boolean jaggedEdgesButton) {
-        _JaggedEdgesButton = jaggedEdgesButton;
-    }
-
-
-    /***
-     * this function recieves the parameters of a pixel and returns a point in the middle of the pixel
-     * @param nX number of columns
-     * @param nY number of rows
-     * @param j current column
-     * @param i current row
-     * @return middle of pixel
-     */
-    public Point createMiddlePixel(int nX, int nY, int j, int i) {
-        // calculating center point
-        //you cannot use getPoint because there is no ray
-        //𝑃𝑐 = 𝑃0 + 𝑑 ∙ 𝑣
-        //finding middle of view plane
-        Point pc = _centerCam.add(_Vto.scale(_distanceVPToCam));
-        //𝑅𝑦 = ℎ/𝑁𝑦{
-        //        //
-        //𝑅𝑥 = 𝑤/𝑁x
-        //calculating size of pixels for width and height
-        double ry = _heightVP / nY;
-        double rx = _widthVP / nX;
-        //finding how much to move up and right to find wanted pixel
-        double xj = (j - ((nX - 1) / 2.0)) * rx;
-        double yi = -(i - ((nY - 1) / 2.0)) * ry;
-
-        //Pij = Pc + (xj*Vright + yi*Vup)
-        //𝑦𝑖 = −(𝑖 – (𝑁𝑦 − 1)/2) ∙ 𝑅𝑦
-        // 𝑥𝑗 = (𝑗 – (𝑁𝑥 − 1)/2) ∙ 𝑅x
-        // finding point pij wanted pixel according to the formula
-        //doing it in parts to prevent addition of zero
-        Point Pij = pc;
-        if (!isZero(xj)) {
-            //xj*Vright
-            Pij = Pij.add(_Vright.scale(xj));
-        }
-        if (!isZero(yi)) {
-            //yi*Vup
-            Pij = Pij.add(_Vup.scale(yi));
-        }
-
-        return Pij;
-    }
-
-    public Camera setMultithreading(int i) {
-        if (i > 1)
-            _MultiThreadingButton = true;
-        NUM_OF_THREADS = i;
-        return this;
-    }
-
-    public Camera setDebugPrint(double v) {
-        //?? assuming debug print is the same as print interval
-        _debugPrint = v;
-        return this;
-    }
 
     /***
      * this function casts a ray from the camera through the current pixel and returns the color of that pixel
+     * this function is designed to save time when implementing the fix for jagged edges
+     * the time improvement here is from 38 seconds to 16 seconds on my computer
      * @param j the column of the pixel
      * @param i the row of the pixel
      * @return color of the pixel
@@ -459,15 +479,17 @@ public class Camera {
             return thisPixelColor;
         }
         if (_JaggedEdgesButton) {
-            //inital color for average calculation
+            //initial color for average calculation
             double colorX = 0;
             double colorY = 0;
             double colorZ = 0;
 
+            //creating the initial parameters for the recursive calculation
+
             Point thisPixelPoint = createMiddlePixel(_imageWriter.getNx(), _imageWriter.getNy(), j, i);
             // out.print(thisPixelPoint);
 
-            //creating a point in the top left corner that is slightly outside the square so that our loop will bring it
+            //creating a point in the top left corner
             Point topLeftCorner = thisPixelPoint;
             Color topLeftColor = _rayTracerBase.traceRay(new Ray(_centerCam, topLeftCorner.subtract(_centerCam).normalize()));
 
@@ -476,7 +498,7 @@ public class Camera {
             bottomRightCorner = bottomRightCorner.add(_Vright.scale((_widthVP / _imageWriter.getNx())));
             Color bottomRightColor = _rayTracerBase.traceRay(new Ray(_centerCam, bottomRightCorner.subtract(_centerCam).normalize()));
 
-            //out.print(bottomRightColor+"\n");
+            //calling recursive function to calculate the color for this pixel
             Color fullPixelColor = recursivePixelColor(topLeftCorner, topLeftColor, bottomRightCorner, bottomRightColor,
                     _Vup, _Vright, "left", 0, (_heightVP / _imageWriter.getNy()), (_widthVP / _imageWriter.getNx()));
 
@@ -487,8 +509,9 @@ public class Camera {
         return Color.BLACK;
     }
 
+
     /***
-     *
+     * This function is the recursive calculation of a color for a pixel or a section of a pixel.
      * @param upperCorner upper left or right corner of pixel section
      * @param upperColor color of upper corner
      * @param bottomCorner bottom left or right corner of pixel section
@@ -497,17 +520,23 @@ public class Camera {
      * @param Vright vector going right (camera coordinates)
      * @param leftRight whether upper corner is to the left or the right of the bottom corner
      * @param recursionNum number of the current recursion
-     * @return Color of the pixel section
+     * @param widthOfPixelSection the width of the current pixel section
+     * @param heightOfPixelSection the height of the current pixel section
+     * @return
      */
     public Color recursivePixelColor(Point upperCorner, Color upperColor, Point bottomCorner, Color bottomColor,
                                      Vector Vup, Vector Vright, String leftRight, int recursionNum, double widthOfPixelSection,
                                      double heightOfPixelSection) {
 
-        if (recursionNum == MAX_RECURSION)
+        //stop condition
+        //MAX_RECURSION = 3 because we started from 0
+        //this means we've divided the pixel into 64 sections
+        if (recursionNum >= MAX_RECURSION)
             return upperColor;
 
-       // out.print(recursionNum);
+        // out.print(recursionNum);
 
+        //initializing the points and colors so that they can be calculated separately for left and right calls
         Point leftTopPoint;
         Point rightTopPoint;
         Point leftBottomPoint;
@@ -518,32 +547,35 @@ public class Camera {
         Color rightTopColor;
         Color leftBottomColor;
         Color rightBottomColor;
-        //we calculated colors inside because we dont know who is upper yet
+
+        //Calculations here depend on where upper corner is relative to bottom corner. If the upper corner is to the
+        //left of the bottom corner, then calculations are slightly different. Therefor we calculated all four corners
+        //as well as their colors and then calculated each of the four sub-pixels afterwards using these points
         if (leftRight == "left") {
             middlePoint = upperCorner.add(_Vup.scale(heightOfPixelSection * -0.5));
-            middlePoint = middlePoint.add(_Vright.scale(widthOfPixelSection * 0.5)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            middlePoint = middlePoint.add(_Vright.scale(widthOfPixelSection * 0.5)).movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
 
-            rightBottomPoint = bottomCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
-            leftTopPoint = upperCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
-            rightTopPoint = upperCorner.add(_Vright.scale(widthOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
-            leftBottomPoint = upperCorner.add(_Vup.scale(-1 * heightOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            rightBottomPoint = bottomCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
+            leftTopPoint = upperCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
+            rightTopPoint = upperCorner.add(_Vright.scale(widthOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
+            leftBottomPoint = upperCorner.add(_Vup.scale(-1 * heightOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
 
             leftTopColor = upperColor;
             rightBottomColor = bottomColor;
             rightTopColor = _rayTracerBase.traceRay(new Ray(_centerCam, rightTopPoint.subtract(_centerCam).normalize()));
             //if(!rightTopColor.equals(Color.MAGENTA)){
-              //  out.print(rightTopColor);
+            //  out.print(rightTopColor);
             //}
             leftBottomColor = _rayTracerBase.traceRay(new Ray(_centerCam, leftBottomPoint.subtract(_centerCam).normalize()));
 
         } else {
             middlePoint = upperCorner.add(_Vup.scale(heightOfPixelSection * -0.5));
-            middlePoint = middlePoint.add(_Vright.scale(widthOfPixelSection * -0.5)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            middlePoint = middlePoint.add(_Vright.scale(widthOfPixelSection * -0.5)).movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
 
-            leftBottomPoint = bottomCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
-            rightTopPoint = upperCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
-            leftTopPoint = upperCorner.add(_Vright.scale(-1 * widthOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
-            rightBottomPoint = upperCorner.add(_Vup.scale(-1 * heightOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection/4);
+            leftBottomPoint = bottomCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
+            rightTopPoint = upperCorner.movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
+            leftTopPoint = upperCorner.add(_Vright.scale(-1 * widthOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
+            rightBottomPoint = upperCorner.add(_Vup.scale(-1 * heightOfPixelSection)).movePointRandom(_Vup, _Vright, widthOfPixelSection / 4);
 
 
             rightTopColor = upperColor;
@@ -552,19 +584,20 @@ public class Camera {
             rightBottomColor = _rayTracerBase.traceRay(new Ray(_centerCam, rightBottomPoint.subtract(_centerCam).normalize()));
         }
 
-
+        //now that we have all five points we can find the middle color (this is done outside because it is the same for
+        //both types of calls
 
 
         Color middleColor = _rayTracerBase.traceRay(new Ray(_centerCam, middlePoint.subtract(_centerCam).normalize()));
-       // if(!middleColor.equals(Color.MAGENTA)){
-         // out.print(middleColor);
-       // }
+
+        //Each sub-pixel's color is calculated. The color is initially the same as the middle and is only updated if
+        //there is a difference between it and the matching corner.
         Color topRight = middleColor;
         if (!middleColor.equals(rightTopColor)) {
 
             topRight = recursivePixelColor(rightTopPoint, rightTopColor, middlePoint, middleColor, Vup, Vright, "right",
                     recursionNum + 1, widthOfPixelSection / 2, heightOfPixelSection / 2);
-        // out.print(topRight);
+            // out.print(topRight);
         }
 
         Color topLeft = middleColor;
@@ -585,10 +618,98 @@ public class Camera {
                     recursionNum + 1, widthOfPixelSection / 2, heightOfPixelSection / 2);
         }
 
+        //once the color for all four sub-pixels has been calculated, they are all added up into one color and then
+        //divided by four in order to have an average.
+        //the average color is then returned
         Color totalColor = topRight.add(topLeft, bottomRight, bottomLeft);
-        //instead of dividing every single one
-
-
-        return  totalColor.scale(0.25);
+        Color averageColor = totalColor.scale(0.25);
+        return averageColor;
     }
+
+
+    //ON/OFF Button implementation:
+
+    /***
+     * on/off button for depth of field (part 8)
+     * @param button on/off
+     * @param apertureSize a small number indicating how blurry objects which are not in focus should be
+     * @param focalLength how far away the objects which are in focus are
+     */
+    public void setDepthButton(boolean button, double apertureSize, double focalLength) {
+        _depthButton = button;
+        _apertureSize = apertureSize;
+        _focalLength = focalLength;
+    }
+
+    /***
+     * on/off button for depth of field
+     * @param depthButton on/off
+     */
+    public void setDepthButton(boolean depthButton) {
+        _depthButton = depthButton;
+    }
+
+    /***
+     * on/off button for jagged edges (part 8)
+     * @param jaggedEdgesButton on/off
+     * @param numberOfMiniPixels root of how many rays should be created per minipixel
+     */
+    public void setJaggedEdgesButton(boolean jaggedEdgesButton, int numberOfMiniPixels) {
+        _JaggedEdgesButton = jaggedEdgesButton;
+        NUMBER_OF_MINIPIXELS = numberOfMiniPixels;
+    }
+
+    /***
+     * on/off button for jagged edges
+     * @param jaggedEdgesButton on/off
+     */
+    public void setJaggedEdgesButton(boolean jaggedEdgesButton) {
+        _JaggedEdgesButton = jaggedEdgesButton;
+    }
+
+
+    /***
+     * on/off button for multi-threading time improvement (part 9)
+     * @param i how many threads to have
+     * @return the camera
+     */
+    public Camera setMultithreading(int i) {
+        if (i > 1)
+            _MultiThreadingButton = true;
+        NUM_OF_THREADS = i;
+        return this;
+    }
+
+    /***
+     * set button for multi-threading (part 9) this allows for easier debugging
+     * @param v interval of how often to print
+     * @return the camera
+     */
+    public Camera setDebugPrint(double v) {
+        _debugPrint = v;
+        return this;
+    }
+
+    /***
+     * on/off button for adaptive super sampling time improvement(part 9)
+     * @param adaptiveSuperSampling on/off
+     * @return the camera
+     */
+    public Camera setAdaptiveSuperSampling(boolean adaptiveSuperSampling) {
+        _adaptiveSuperSampling = adaptiveSuperSampling;
+        return this;
+    }
+
+    /***
+     * on/off button for adaptive super sampling (part 9)
+     * @param adaptiveSuperSampling on/off
+     * @param recursion max amount of recursions
+     * @return the camera
+     */
+    public Camera setAdaptiveSuperSampling(boolean adaptiveSuperSampling, int recursion) {
+        _adaptiveSuperSampling = adaptiveSuperSampling;
+        MAX_RECURSION = recursion;
+        return this;
+    }
+
 }
