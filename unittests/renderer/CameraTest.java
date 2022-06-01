@@ -144,10 +144,11 @@ class CameraTest {
      */
     @Test
     public void ourImageWithDepth() {
-        Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
-                .setVPSize(200, 200).setVPDistance(1000);
+        Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800);
 
-        camera.setDepthButton(true, 0.02, 13);
+
+        camera.setDepthButton(true, 2, 45);
 
         Point p0 = new Point(0, -3, 5);
         Point p1 = new Point(0, 3, 5);
@@ -177,43 +178,49 @@ class CameraTest {
                 new Quadrangle(p0, p1, p2, p3).setTransparency(new Double3(0.7)).setColor(Color.LIGHT_BLUE),
                 //mirrors
                 new Quadrangle(p1, p2, p5, p4).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD),
-                new Quadrangle(p7, p0, p3, p6).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD),
-                //sun
-                new Sphere(new Point(-100, 0, 2), 2d)
-                        .setEmission(Color.RED)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Quadrangle(p7, p0, p3, p6).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD)
+
+                ,new Sphere(new Point(2, 0, 3), 2)
+                .setEmission(Color.BLUE)
+                .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
+                new Sphere(new Point(2, 0, 3), 1)
+                        .setEmission(Color.BLUE)
+                        .setMaterial(new Material().setKd(0.2).setKs(0.1).setShininess(30)),
+
                 //close to window
-                new Sphere(new Point(1, -0.75, 2), 0.5)
-                        .setEmission(Color.RED)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+
                 //close to camera bigger
-                new Sphere(new Point(63, 0.75, 1.1), 0.5)
-                        .setEmission(Color.GREEN)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                new Sphere(new Point(63, 0.75, 1.7), 0.2)
+
+
+                new Sphere(new Point(20, 2, 1.7), 1)
                         .setEmission(Color.GREEN)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //close to camera smaller
-                new Sphere(new Point(59, 0, 1.1), 0.4)
+                new Sphere(new Point(16, 3, 1.1), 1)
                         .setEmission(Color.BLUE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                new Sphere(new Point(59, 0, 1.6), 0.15)
+
+                        //heads
+                new Sphere(new Point(20, 2, 2.5), 0.5)
+                        .setEmission(Color.GREEN)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //close to camera smaller
+                new Sphere(new Point(16, 3, 2), 0.5)
                         .setEmission(Color.BLUE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //floor
-                //new Quadrangle(p16, p17, p19, p18).setColor(Color.YELLOW)
-                new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
-                new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
+                        new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
+                        new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
         );
 
         LinkedList<LightSource> lights = new LinkedList<>();
 
 
-        lights.add(new Spotlight(new Color(700, 400, 400),
-                new Point(40, 40, 115),
-                new Vector(-1, -1, -4)));
-        lights.add(new PointLight(Color.BLUE, new Point(100, -100, 100)));
-        lights.add(new DirectionalLight(Color.MAGENTA,new Vector(-1,0,0)));
+        lights.add(new Spotlight(Color.MAGENTA,
+                new Point(40, 40, 200),
+                new Vector(-1, -1, -4)).setKl(2E-5).setKq(2E-5));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)));
+        //????????????move it or change color
+        lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -5)));
 
         Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
                 .setLights(lights).build();
@@ -294,10 +301,11 @@ class CameraTest {
      */
     @Test
     public void ourImageWithSmoothEdges() {
-        Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
-                .setVPSize(200, 200).setVPDistance(1000);
+        Camera camera = new Camera(new Point(55, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(1000);
 
-        camera.setJaggedEdgesButton(true, 3);
+
+        camera.setJaggedEdgesButton(true, 10);
 
         camera.setJaggedEdgesButton(true);
         Point p0 = new Point(0, -3, 5);

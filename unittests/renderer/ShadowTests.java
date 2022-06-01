@@ -165,8 +165,8 @@ public class ShadowTests {
 
         Camera camera = new Camera(new Point(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
                 .setVPSize(200, 200).setVPDistance(1000) //
-                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(true, 10));
-
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false, 10));
+camera.setJaggedEdgesButton(true);
         camera.setImageWriter(new ImageWriter("shadowTrianglesSphere soft shadows", 600, 600)) //
                 .renderImage() //
                 .writeToImage();
