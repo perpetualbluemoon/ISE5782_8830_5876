@@ -21,6 +21,13 @@ public class Camera {
     private Vector _Vto;//z
     private Point _centerCam;
 
+
+    private static boolean _MultiThreadingButton = false;
+    private static int NUM_OF_THREADS = 1;
+    private double _debugPrint = 0;
+
+
+
     //information about the view plane
     private double _heightVP;
     private double _widthVP;
@@ -160,13 +167,26 @@ public class Camera {
         //information about creation of the final image
         if ((_imageWriter == null) || (_rayTracerBase == null))
             throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
+        if (_MultiThreadingButton) {
+            Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), _debugPrint); //debug print is print interval
+            int threadsCount=3;
+            while (threadsCount-- > 0) {
+                new Thread(() -> {
+                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone())
+                        castRay(pixel.col, pixel.row);
+                }).start();
+            }
+            Pixel.waitToFinish();
 
-        //for every row
-        for (int i = 0; i < _imageWriter.getNy(); i++) {
-            //for every column
-            for (int j = 0; j < _imageWriter.getNx(); j++) {
-                Color thisPixelColor = castRay(j, i);
-                _imageWriter.writePixel(j, i, thisPixelColor);
+        }
+        else {
+            //for every row
+            for (int i = 0; i < _imageWriter.getNy(); i++) {
+                //for every column
+                for (int j = 0; j < _imageWriter.getNx(); j++) {
+                    Color thisPixelColor = castRay(j, i);
+                    _imageWriter.writePixel(j, i, thisPixelColor);
+                }
             }
         }
         return this;
@@ -272,23 +292,23 @@ public class Camera {
             Point outerTopLeftCorner = thisPixelPoint.add(_Vup.scale(heightOfMiniPixel * 0.5));
             outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
 
-            LinkedList<Point> minipixelPoints=thisPixelPoint.createListOfMovedPoints(outerTopLeftCorner,_Vup,_Vright,_heightVP / _imageWriter.getNy()
-                    ,_widthVP / _imageWriter.getNx(), NUMBER_OF_MINIPIXELS);
+            LinkedList<Point> minipixelPoints = thisPixelPoint.createListOfMovedPoints(outerTopLeftCorner, _Vup, _Vright, _heightVP / _imageWriter.getNy()
+                    , _widthVP / _imageWriter.getNx(), NUMBER_OF_MINIPIXELS);
             //for each mini pixel
-                    for(Point movedPoint:minipixelPoints){
+            for (Point movedPoint : minipixelPoints) {
 
-                    Vector rayDirectionFromMiniPixel =_centerCam.subtract(movedPoint).normalize();
-                    Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
+                Vector rayDirectionFromMiniPixel = _centerCam.subtract(movedPoint).normalize();
+                Ray jaggedEdgesRay = new Ray(_centerCam, rayDirectionFromMiniPixel.scale(-1));
 
-                    //tracing ray for color
-                    Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
-                    //out.print(thisPointColor);
-                    //adding the colors for average
-                    colorX += thisPointColor.getColor().getRed();
-                    colorY += thisPointColor.getColor().getGreen();
-                    colorZ += thisPointColor.getColor().getBlue();
-                    //out.print(_centerCam.subtract(movedPoint).normalize());
-                  }
+                //tracing ray for color
+                Color thisPointColor = _rayTracerBase.traceRay(jaggedEdgesRay);
+                //out.print(thisPointColor);
+                //adding the colors for average
+                colorX += thisPointColor.getColor().getRed();
+                colorY += thisPointColor.getColor().getGreen();
+                colorZ += thisPointColor.getColor().getBlue();
+                //out.print(_centerCam.subtract(movedPoint).normalize());
+            }
 
 
             //calculating the average - dividing by the number of mini pixels squared because of the double loop
@@ -316,14 +336,14 @@ public class Camera {
 
             //     construct depth ray from the aperture point to the focal point
             //     get the color using trace ray and add to list
-            double heightOfMiniPixel = _apertureSize/NUMBER_OF_APERTURE_POINTS;
-            double widthOfMiniPixel = _apertureSize/NUMBER_OF_APERTURE_POINTS;
+            double heightOfMiniPixel = _apertureSize / NUMBER_OF_APERTURE_POINTS;
+            double widthOfMiniPixel = _apertureSize / NUMBER_OF_APERTURE_POINTS;
             Point outerTopLeftCorner = _centerCam.add(_Vup.scale(heightOfMiniPixel * 0.5));
             outerTopLeftCorner = outerTopLeftCorner.add(_Vright.scale(widthOfMiniPixel * 0.5));
-                //helper function returns one random point around the center
-                LinkedList<Point> listPixelPoints= _centerCam.createListOfMovedPoints(outerTopLeftCorner, _Vup, _Vright, _apertureSize
-                        ,_apertureSize,NUMBER_OF_APERTURE_POINTS);
-            for (Point movedPoint:listPixelPoints) {
+            //helper function returns one random point around the center
+            LinkedList<Point> listPixelPoints = _centerCam.createListOfMovedPoints(outerTopLeftCorner, _Vup, _Vright, _apertureSize
+                    , _apertureSize, NUMBER_OF_APERTURE_POINTS);
+            for (Point movedPoint : listPixelPoints) {
 
                 Ray depthRay = constructDepthRay(movedPoint, focalPoint);
                 Color thisPointColor = _rayTracerBase.traceRay(depthRay);
@@ -335,9 +355,9 @@ public class Camera {
             }
             // out of the for: calculate average of x,y,z for the colors (x,y,z)
 
-            double averageX = colorX /( NUMBER_OF_APERTURE_POINTS*NUMBER_OF_APERTURE_POINTS);
-            double averageY = colorY / ( NUMBER_OF_APERTURE_POINTS*NUMBER_OF_APERTURE_POINTS);
-            double averageZ = colorZ / ( NUMBER_OF_APERTURE_POINTS*NUMBER_OF_APERTURE_POINTS);
+            double averageX = colorX / (NUMBER_OF_APERTURE_POINTS * NUMBER_OF_APERTURE_POINTS);
+            double averageY = colorY / (NUMBER_OF_APERTURE_POINTS * NUMBER_OF_APERTURE_POINTS);
+            double averageZ = colorZ / (NUMBER_OF_APERTURE_POINTS * NUMBER_OF_APERTURE_POINTS);
 
             Color thisPixelColor = new Color(averageX, averageY, averageZ);
             return thisPixelColor;
@@ -363,7 +383,6 @@ public class Camera {
     public void setJaggedEdgesButton(boolean jaggedEdgesButton) {
         _JaggedEdgesButton = jaggedEdgesButton;
     }
-
 
 
     /***
@@ -406,5 +425,18 @@ public class Camera {
         }
 
         return Pij;
+    }
+
+    public Camera setMultithreading(int i) {
+        if (i > 1)
+            _MultiThreadingButton = true;
+        NUM_OF_THREADS = i;
+        return this;
+    }
+
+    public Camera setDebugPrint(double v) {
+        //?? assuming debug print is the same as print interval
+        _debugPrint = v;
+        return this;
     }
 }
