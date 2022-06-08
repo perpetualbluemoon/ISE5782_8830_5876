@@ -19,7 +19,7 @@ public class PointLight extends Light implements LightSource {
     double _kQ;
 
     //side of square around lightSource used for soft shadows
-    double _size=0.5;
+    double _size=0.1;
 
     /***
      * @param intensity intensity of the light
