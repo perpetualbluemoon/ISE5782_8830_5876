@@ -148,7 +148,7 @@ class CameraTest {
                 .setVPSize(300, 300).setVPDistance(800);
 
 
-        camera.setDepthButton(true, 2, 45);
+        camera.setDepthButton(true, 2, 50);
 
         Point p0 = new Point(0, -3, 5);
         Point p1 = new Point(0, 3, 5);
@@ -201,11 +201,11 @@ class CameraTest {
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
                         //heads
-                new Sphere(new Point(20, 2, 2.5), 0.5)
+                new Sphere(new Point(20, 2, 2.8), 0.5)
                         .setEmission(Color.GREEN)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //close to camera smaller
-                new Sphere(new Point(16, 3, 2), 0.5)
+                new Sphere(new Point(16, 3, 2.25), 0.5)
                         .setEmission(Color.BLUE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                         new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
