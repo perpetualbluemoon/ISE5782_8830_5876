@@ -8,7 +8,6 @@ import primitives.Vector;
 import java.util.LinkedList;
 import java.util.MissingResourceException;
 
-import static java.lang.System.out;
 import static primitives.Util.isZero;
 
 /***
@@ -236,9 +235,11 @@ public class Camera {
                     if(_adaptiveSuperSampling) { //implementing adaptive super sampling (part 9)
                         Color thisPixelColor = castRay(j, i);
                         _imageWriter.writePixel(j, i, thisPixelColor);
+                        //out.print("calling cast ray new  ");
                     }
                     else{
                         Color thisPixelColor = castRayOld(j, i);
+                        //out.print("calling cast ray old ");
                         _imageWriter.writePixel(j, i, thisPixelColor);
                     }
                 }

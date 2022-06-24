@@ -1,7 +1,5 @@
 package primitives;
 
-import java.util.Objects;
-
 import static primitives.Util.alignZero;
 
 /**
@@ -25,7 +23,7 @@ public class Color {
     public static final Color BLACK = new Color();
     //color sent as double (255d) so that it doesn't need to convert it
     public static final Color BLUE = new Color(0,0,255d);
-    public static final Color YELLOW = new Color(java.awt.Color.YELLOW);
+    public static final Color YELLOW = new Color(150,150,0);
     public static final Color RED = new Color(java.awt.Color.RED);
     public static final Color GREEN = new Color(java.awt.Color.GREEN);
     public static final Color SILVER = new Color(192,192,192);

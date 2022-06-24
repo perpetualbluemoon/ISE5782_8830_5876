@@ -6,8 +6,6 @@ import primitives.Vector;
 
 import java.util.LinkedList;
 
-import static java.lang.System.out;
-
 /***
  * Point light is a type of light source that is from a certain point
  */
@@ -19,7 +17,7 @@ public class PointLight extends Light implements LightSource {
     double _kQ;
 
     //side of square around lightSource used for soft shadows
-    double _size=0.5;
+    double _size=1;
 
     /***
      * @param intensity intensity of the light
