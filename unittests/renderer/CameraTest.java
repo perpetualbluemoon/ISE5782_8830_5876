@@ -1,9 +1,6 @@
 package renderer;
 
-import geometries.Geometries;
-import geometries.Quadrangle;
-import geometries.Sphere;
-import geometries.Triangle;
+import geometries.*;
 import lighting.*;
 import org.junit.jupiter.api.Test;
 import primitives.*;
@@ -144,11 +141,16 @@ class CameraTest {
      */
     @Test
     public void ourImageWithDepth() {
+        //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+              .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+        //side camera
+       /* Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
 
-       //Camera camera = new Camera(new Point(0,0,100), new Vector(0.2,0,-1), new Vector(-1, 0, 1))
-            //    .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+     //up to bottom camera
+     /*  Camera camera = new Camera(new Point(0,0,100), new Vector(0.2,0,-1), new Vector(-1, 0, 1))
+               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
        // camera.setDepthButton(true, 2, 50);
 
         Point p0 = new Point(0, -3, 5);
@@ -189,78 +191,60 @@ class CameraTest {
                         .setMaterial(new Material().setKd(0.2).setKs(0.1).setShininess(30)),
 
 
-
-              //BODY OF GREEN
-                new Sphere(new Point(16, 4, 1.7), 3)
-                        .setEmission(Color.BLUE)
-                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //BODY OF BLUE
-                new Sphere(new Point(20, 6.5, 1.1), 3)
-                        .setEmission(Color.BLUE)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //BODY OF RED
-                new Sphere(new Point(20, 1.5, 1.1), 3)
-                        .setEmission(Color.BLUE)
+                //wings
+                //left
+                new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //right
+                new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //BODY OF GREEN
+                new Sphere(new Point(14, 4, 1), 3)
+                        .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
                 //HEAD OF GREEN
-                new Sphere(new Point(16, 4, 4.5), 2)
+                new Sphere(new Point(16, 4, 3.5), 2)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
-                //HEAD OF BLUE
-                new Sphere(new Point(20,6.5, 3.5), 2)
-                        .setEmission(Color.YELLOW)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
-                //HEAD OF RED
-                new Sphere(new Point(20,1.5, 3.5), 2)
-                        .setEmission(Color.YELLOW)
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 5, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //PUPIL OF GREEN
-                new Sphere(new Point(17.2, 4, 5.6), 0.5)
+                new Sphere(new Point(17, 3, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF BLUE
-                new Sphere(new Point(21.2,6.5, 4.6), 0.5)
-                        .setEmission(Color.BLACK)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-
-                //PUPIL OF RED
-                new Sphere(new Point(21.2,1.5, 4.6), 0.5)
-                        .setEmission(Color.BLACK)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //WHITE PART OF EYE
-                //WHITE EYE OF GREEN
-                new Sphere(new Point(16.7, 4, 5.3), 1)
+                //white around eyes
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //WHITE EYE OF BLUE
-                new Sphere(new Point(20.7,6.5, 4.3), 1)
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-
-                //WHITE EYE OF RED
-                new Sphere(new Point(20.7,1.5, 4.3), 1)
-                        .setEmission(Color.WHITE)
+                //eggs
+                new Sphere(new Point(18, 2,1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //goggle part of minion
-                //goggle green
-//                // new Sphere(new Point(17, 4, 5.3), 1)
-//                        .setEmission(Color.DARK_GRAY)
-//                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-//                //goggle BLUE
-//                new Sphere(new Point(21,6.5, 4.3), 1)
-//                        .setEmission(Color.DARK_GRAY)
-//                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-//
-//                //goggle RED
-//                new Sphere(new Point(21,1.5, 4.3), 1)
-//                        .setEmission(Color.DARK_GRAY)
-//                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 3, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 4, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //mouth beek
+                new Triangle(new Point(19.5, 4.3, 2),new Point(17.5, 5, 4),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
+                //BRANCH
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN)
 
 
-                new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
-                new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
+
+                //new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
+                //new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
         );
 
         LinkedList<LightSource> lights = new LinkedList<>();
@@ -288,7 +272,7 @@ class CameraTest {
 
         ImageWriter imageWriter = new ImageWriter("our test depth", 600, 600);
         camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(true,20))
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,20))
                 .renderImage()
                 .writeToImage();
     }
