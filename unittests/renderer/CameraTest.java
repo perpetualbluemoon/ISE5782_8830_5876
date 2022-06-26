@@ -242,7 +242,7 @@ class CameraTest {
                 new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
                 //house
                //front of house
-                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN),
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN).setReflectivity(new Double3(0.2)),
                 //right of house
                 new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
                 //left of house. it is crooced so I can view it
@@ -252,29 +252,24 @@ class CameraTest {
                 //top of house-roof-left
                new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
                 //top of house- roof - right
-                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED)
-                //new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
-                //new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED),
+                //bubbles in the sky
+                new Sphere(new Point(12, 0, 4),1).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13, 0,7),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(12, 6, 4.5),0.5).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13.5, 8, 4),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE)
+
         );
 
         LinkedList<LightSource> lights = new LinkedList<>();
         lights.add(new Spotlight(Color.MAGENTA,
-                new Point(40, 40, 200),
-                new Vector(-1, -1, -4)).setKl(0.0001).setKq(0.0001));
-        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)));
-        //????????????move it or change color
+                new Point(40, 40, -40),
+                new Vector(-1, -1, 4)).setKl(0.0001).setKq(0.0001));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)).setKl(0.001).setKq(0.0001));
+
         lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -2)));
 
 
-/*
-
-        lights.add(new Spotlight(Color.MAGENTA,
-                new Point(-50, 40, 200),
-                new Vector(5, -1, -4)).setKl(0.0000001).setKq(0.000001));
-        lights.add(new PointLight(Color.YELLOW, new Point(-100, -100, 100)).setKq(0.0000000001).setKl(0.000000001));
-        //????????????move it or change color
-        //lights.add(new DirectionalLight(Color.GOLD,new Vector(0, 1, 0)));
-*/
 
         Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
                 .setLights(lights).build();
@@ -282,7 +277,7 @@ class CameraTest {
 
         ImageWriter imageWriter = new ImageWriter("our test depth", 600, 600);
         camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,20))
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
                 .renderImage()
                 .writeToImage();
     }
