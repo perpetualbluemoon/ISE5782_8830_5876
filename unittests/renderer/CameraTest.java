@@ -145,15 +145,15 @@ class CameraTest {
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
         //side camera
-       /* Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-
+        /*Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+*/
      //up to bottom camera
-     /*  Camera camera = new Camera(new Point(0,0,100), new Vector(0.2,0,-1), new Vector(-1, 0, 1))
+      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
        // camera.setDepthButton(true, 2, 50);
 
-        Point p0 = new Point(0, -3, 5);
+/*        Point p0 = new Point(0, -3, 5);
         Point p1 = new Point(0, 3, 5);
         Point p2 = new Point(0, 3, 0);
         Point p3 = new Point(0, -3, 0);
@@ -174,11 +174,11 @@ class CameraTest {
         Point p16 = new Point(0,-10,0.5);
         Point p17 = new Point(0,10,0.5);
         Point p18 = new Point(100, -10, 0.5);
-        Point p19 = new Point(100, 10, 0.5);
+        Point p19 = new Point(100, 10, 0.5);*/
 
         Geometries geometries = new Geometries(
                 //window
-                new Quadrangle(p0, p1, p2, p3).setTransparency(new Double3(0.7)).setColor(Color.LIGHT_BLUE),
+                /*new Quadrangle(p0, p1, p2, p3).setTransparency(new Double3(0.7)).setColor(Color.LIGHT_BLUE),
                 //mirrors
                 new Quadrangle(p1, p2, p5, p4).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD),
                 new Quadrangle(p7, p0, p3, p6).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD)
@@ -190,7 +190,7 @@ class CameraTest {
                         .setEmission(Color.BLUE)
                         .setMaterial(new Material().setKd(0.2).setKs(0.1).setShininess(30)),
 
-
+*/
                 //wings
                 //left
                 new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
@@ -239,10 +239,20 @@ class CameraTest {
                 new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
                 new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
                 //BRANCH
-                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN)
-
-
-
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
+                //house
+               //front of house
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN),
+                //right of house
+                new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
+                //left of house. it is crooced so I can view it
+                new Quadrangle(new Point(2, 0, 0.3),new Point(10, 0, 0.3),new Point(10, 0.1, 10),new Point(2,0.1,10)).setColor(Color.BROWN),
+                //back of house
+                new Quadrangle(new Point(2, 0, 0.3),new Point(2, 8, 0.3),new Point(2, 8, 10),new Point(2, 0, 10)).setColor(Color.BROWN),
+                //top of house-roof-left
+               new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
+                //top of house- roof - right
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED)
                 //new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
                 //new Triangle(p19,p18,p16).setEmission(Color.YELLOW)
         );
