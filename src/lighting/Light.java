@@ -8,12 +8,16 @@ import primitives.Color;
 abstract class Light {
     Color _intensity;
 
-    //constructor
+    /**
+    *constructor
+    */
     protected Light(Color intensity){
         _intensity = intensity;
     }
 
-    //getter
+    /***getter
+     * @return intensity
+     */
     public Color getIntensity() {
         return _intensity;
     }

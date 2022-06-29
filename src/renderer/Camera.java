@@ -54,13 +54,20 @@ public class Camera {
     private static int NUM_OF_THREADS = 1;
     private double _debugPrint = 0;
 
-    //feature of part 9
-    //ON/OFF button default is off
+    /**
+     *  feature of part 9
+     *  /ON/OFF button default is off
+     */
     private boolean _adaptiveSuperSampling = false;
+    /***
+     * maximum recursion, for button
+     */
     public static int MAX_RECURSION = 3;
 
 
-    //constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
+    /***
+    *constructor receives @param  Point centerCam,Vector vto, Vector vup and creates camera
+     */
 
     /***
      * this constructor receives vup and vto and creates vright, creates an object of class camera
@@ -89,7 +96,7 @@ public class Camera {
 
     /***function setter
      *@param distanceVPToCam for distance of view plane from camera
-     @returns current object - camera
+     *@return Camera current object - camera
      */
     public Camera setVPDistance(double distanceVPToCam) {
         _distanceVPToCam = distanceVPToCam;
@@ -97,10 +104,10 @@ public class Camera {
     }
 
     /***
-     function setter
-     @param width-width for size of view plane
-     @param height -height for size of view plane
-     @returns current object - camera
+     *function setter
+     *@param width-width for size of view plane
+     *@param height -height for size of view plane
+     *@return current object - camera
      */
     public Camera setVPSize(double width, double height) {
         _widthVP = width;
@@ -160,40 +167,64 @@ public class Camera {
         return this;
     }
 
-    //getters
+    /***
+     * getter
+     * @return vector
+     */
     public Vector getVright() {
         return _Vright;
     }
-
+    /***
+     * getter
+     * @return vector
+     */
     public Vector getVup() {
         return _Vup;
     }
-
+    /***
+     * getter
+     * @return vector
+     */
     public Vector getVto() {
         return _Vto;
     }
-
+    /***
+     * getter
+     * @return point center of cam
+     */
     public Point getCenterCam() {
         return _centerCam;
     }
-
+    /***
+     * getter
+     * @return double height
+     */
     public double getHeightVP() {
         return _heightVP;
     }
-
+    /***
+     * getter
+     * @return double width
+     */
     public double getWidthVP() {
         return _widthVP;
     }
-
+    /***
+     * getter
+     * @return double distance
+     */
     public double getDistanceVPToCam() {
         return _distanceVPToCam;
     }
 
-    //basic camera functions
+    /**
+     * basic camera functions
+     */
 
     /***
      * function render Image checks that all the fields are initialized and then renders the image
      * this function uses some of the on/off buttons to determine which functions to call and in what manner
+     * @return camera in build like manner
      */
     public Camera renderImage() {
         //coordinates of the camera are not null
@@ -293,7 +324,7 @@ public class Camera {
         Point Pij = createMiddlePixel(nX, nY, j, i);
         //pc!=p0 so subtract will not create vector 0
         Vector Vij = Pij.subtract(_centerCam);
-        //𝒗𝒊,𝒋 = 𝑷𝒊,𝒋 − 𝑷0
+        //vi,j = pi,j − p0
         Ray rayReturn = new Ray(_centerCam, Vij);
         return rayReturn;
     }
@@ -322,12 +353,12 @@ public class Camera {
     public Point createMiddlePixel(int nX, int nY, int j, int i) {
         // calculating center point
         //you cannot use getPoint because there is no ray
-        //𝑃𝑐 = 𝑃0 + 𝑑 ∙ 𝑣
+        //pc =p0+ d*v
         //finding middle of view plane
         Point pc = _centerCam.add(_Vto.scale(_distanceVPToCam));
-        //𝑅𝑦 = ℎ/𝑁𝑦{
+        //RY= H/NY{
         //        //
-        //𝑅𝑥 = 𝑤/𝑁x
+        //RX = W/NX
         //calculating size of pixels for width and height
         double ry = _heightVP / nY;
         double rx = _widthVP / nX;
@@ -335,18 +366,18 @@ public class Camera {
         double xj = (j - ((nX - 1) / 2.0)) * rx;
         double yi = -(i - ((nY - 1) / 2.0)) * ry;
 
-        //Pij = Pc + (xj*Vright + yi*Vup)
-        //𝑦𝑖 = −(𝑖 – (𝑁𝑦 − 1)/2) ∙ 𝑅𝑦
-        // 𝑥𝑗 = (𝑗 – (𝑁𝑥 − 1)/2) ∙ 𝑅x
+        //Pi,j = pc + (xj*Vright + yi*Vup)
+        //yi = -(i - (NY − 1)/2) * RY
+        // XJ = (J - (NX -1)/2) * RX
         // finding point pij wanted pixel according to the formula
         //doing it in parts to prevent addition of zero
         Point Pij = pc;
         if (!isZero(xj)) {
-            //xj*Vright
+            //XJ*Vright
             Pij = Pij.add(_Vright.scale(xj));
         }
         if (!isZero(yi)) {
-            //yi*Vup
+            //YI*VUP
             Pij = Pij.add(_Vup.scale(yi));
         }
 
@@ -523,7 +554,7 @@ public class Camera {
      * @param recursionNum number of the current recursion
      * @param widthOfPixelSection the width of the current pixel section
      * @param heightOfPixelSection the height of the current pixel section
-     * @return
+     * @return color of pixel segment( it's the recursive function)
      */
     public Color recursivePixelColor(Point upperCorner, Color upperColor, Point bottomCorner, Color bottomColor,
                                      Vector Vup, Vector Vright, String leftRight, int recursionNum, double widthOfPixelSection,

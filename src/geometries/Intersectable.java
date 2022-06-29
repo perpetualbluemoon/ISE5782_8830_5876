@@ -4,7 +4,6 @@ import primitives.Point;
 import primitives.Ray;
 
 import java.util.List;
-import java.util.Objects;
 
 /***
  * Interface for Composite Design Pattern
@@ -28,6 +27,11 @@ public abstract class Intersectable {
      */
     protected abstract List<GeoPoint> findGeoIntersectionsHelper(Ray ray);
 
+    /***
+     * function finds intersections between a ray and the list of geometries
+     * @param ray the ray
+     * @return the list of points
+     */
     public List<Point> findIntersections(Ray ray) {
         var geoList = findGeoIntersections(ray);
         return geoList == null ? null
@@ -38,10 +42,20 @@ public abstract class Intersectable {
      * this is a helper class for Intersectable which saves the color of a point
      */
     public static class GeoPoint {
+        /***
+         * the geometry that the point is on
+         */
         public Geometry _geoPointGeometry;
+        /***
+         * the point in the 3D space
+         */
         public Point _geoPoint;
 
-        //constructor
+        /***
+         * constructor
+         * @param geoPointGeometry geometry
+         * @param geoPoint the point on the geometry
+         */
         public GeoPoint(Geometry geoPointGeometry, Point geoPoint) {
             _geoPointGeometry = geoPointGeometry;
             _geoPoint = geoPoint;

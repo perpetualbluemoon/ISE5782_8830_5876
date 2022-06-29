@@ -1,6 +1,5 @@
 package lighting;
 
-import geometries.Intersectable;
 import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
@@ -35,6 +34,7 @@ public interface LightSource {
     /***
      *
      * @param lightDirection vector from the object to the light source
+     * @param rootOfMovedLightPoints height and width of box around light
      * @return list of points around the
      */
     public LinkedList<Point> findPointsAroundLight(Vector lightDirection, int rootOfMovedLightPoints);

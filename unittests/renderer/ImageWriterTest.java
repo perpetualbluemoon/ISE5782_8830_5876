@@ -1,11 +1,7 @@
 package renderer;
 
-import primitives.Color;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
-
-import primitives.*;
+import primitives.Color;
 
 /**
  * Unit tests for renderer.ImageWriter class
@@ -13,7 +9,7 @@ import primitives.*;
  */
 public class ImageWriterTest {
     /**
-     * Test method for {@link ImageWriter#writeToImage().
+     * Test method for {@link ImageWriter#writeToImage()}
      * This method creates the image in png format
      */
     @Test

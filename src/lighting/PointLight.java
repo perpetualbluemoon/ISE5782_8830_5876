@@ -20,6 +20,7 @@ public class PointLight extends Light implements LightSource {
     double _size=1;
 
     /***
+     * constructor
      * @param intensity intensity of the light
      * @param position position of the light in the 3D space
      */
@@ -31,25 +32,41 @@ public class PointLight extends Light implements LightSource {
         _kQ = 0;
     }
 
+
     /***
      * setters in similar form to builder pattern which return this
+     * @param kC kc
+     * @return the object for builder-like use
      */
-
     public PointLight setKc(double kC) {
         _kC = kC;
         return this;
     }
 
+    /***
+     * setters in similar form to builder pattern which return this
+     * @param kL kl
+     * @return object for builder-like use
+     */
     public PointLight setKl(double kL) {
         _kL = kL;
         return this;
     }
 
+    /***
+     * setters in similar form to builder pattern which return this
+     * @param kQ kq
+     * @return object for builder-like use
+     */
     public PointLight setKq(double kQ) {
         _kQ = kQ;
         return this;
     }
 
+    /***
+     * setter
+     * @param size size of box around light
+     */
     public void setSize(double size) {
         _size = size;
     }
@@ -73,8 +90,7 @@ public class PointLight extends Light implements LightSource {
      */
     @Override
     public Vector getL(Point p) {
-        Vector l = p.subtract(_position).normalize();
-        return l;
+        return p.subtract(_position).normalize();
     }
 
     /***
@@ -109,7 +125,6 @@ public class PointLight extends Light implements LightSource {
         Point edgeOfPixel = _position.add(V.scale(-0.5*_size));
         edgeOfPixel=edgeOfPixel.add(U.scale(0.5*_size));
 
-        LinkedList<Point> pointsAroundLight= _position.createListOfMovedPoints(edgeOfPixel, U, V, height, width, root_of_points);
-        return pointsAroundLight;
+        return _position.createListOfMovedPoints(edgeOfPixel, U, V, height, width, root_of_points);
     }
 }

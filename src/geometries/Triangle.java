@@ -1,26 +1,33 @@
 package geometries;
 
-import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
 import java.util.List;
 
-import static java.lang.System.out;
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
+/***
+ * class of triangle
+ */
 public class Triangle extends Polygon {
 
     /***
      * if all three points are in a line
-     * @param p1, p2, p3 - points to build the triangle
+     * @param p1 p1
+     * @param p2 p2
+     * @param p3 - points to build the triangle
      */
     public Triangle(Point p1, Point p2, Point p3) {
         super(p1, p2, p3);
     }
 
+    /***
+     *to string function
+     * @return String
+     */
     @Override
     public String toString() {
         return "Triangle{" +
@@ -66,7 +73,10 @@ public class Triangle extends Polygon {
         if (s1 * s3 <= 0) {
             return null;
         }
-        //the list we got from super is valid, change the field of geoPointGeometry to this and then return the list
+        /***
+         * the list we got from super is valid, change the field of geoPointGeometry to this and then return the list
+         */
+
         for (var item : intersections) {
             item._geoPointGeometry = this;
         }

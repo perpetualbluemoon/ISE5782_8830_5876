@@ -140,57 +140,22 @@ class CameraTest {
      * our test
      */
     @Test
-    public void ourImageWithDepth() {
+    public void birdWithJaggedEdjes() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-              .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+              .setVPSize(300, 300).setVPDistance(800).setMultithreading(4);//etAdaptiveSuperSampling(true);
         //side camera
-        /*Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
                 .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-*/
-     //up to bottom camera
+*/     //up to bottom camera
       /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-       // camera.setDepthButton(true, 2, 50);
+       //camera.setDepthButton(true, 2, 50);
+        camera.setJaggedEdgesButton(true,20);
 
-/*        Point p0 = new Point(0, -3, 5);
-        Point p1 = new Point(0, 3, 5);
-        Point p2 = new Point(0, 3, 0);
-        Point p3 = new Point(0, -3, 0);
-        Point p4 = new Point(9, 6, 5);
-        Point p5 = new Point(9, 6, 0);
-        Point p6 = new Point(9, -6, 0);
-        Point p7 = new Point(9, -6, 5);
-
-        Point p8 = new Point(1, 0, 0);
-        Point p9 = new Point(2, 1, 0);
-        Point p10 = new Point(3, 0, 0);
-        Point p11 = new Point(2, -1, 0);
-        Point p12 = new Point(1, 0, 2);
-        Point p13 = new Point(2, 1, 2);
-        Point p14 = new Point(3, 0, 2);
-        Point p15 = new Point(2, -1, 2);
-
-        Point p16 = new Point(0,-10,0.5);
-        Point p17 = new Point(0,10,0.5);
-        Point p18 = new Point(100, -10, 0.5);
-        Point p19 = new Point(100, 10, 0.5);*/
 
         Geometries geometries = new Geometries(
-                //window
-                /*new Quadrangle(p0, p1, p2, p3).setTransparency(new Double3(0.7)).setColor(Color.LIGHT_BLUE),
-                //mirrors
-                new Quadrangle(p1, p2, p5, p4).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD),
-                new Quadrangle(p7, p0, p3, p6).setReflectivity(new Double3(0.5)).setShininess(1000).setColor(Color.GOLD)
 
-                ,new Sphere(new Point(2, 0, 3), 2)
-                .setEmission(Color.BLUE)
-                .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
-                new Sphere(new Point(2, 0, 3), 1)
-                        .setEmission(Color.BLUE)
-                        .setMaterial(new Material().setKd(0.2).setKs(0.1).setShininess(30)),
-
-*/
                 //wings
                 //left
                 new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
@@ -275,7 +240,437 @@ class CameraTest {
                 .setLights(lights).build();
 
 
-        ImageWriter imageWriter = new ImageWriter("our test depth", 600, 600);
+        ImageWriter imageWriter = new ImageWriter("bird with jagged edges", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
+                .renderImage()
+                .writeToImage();
+    }
+
+    @Test
+    public void birdWithSoftShadows() {
+        //front camera
+        Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+        //side camera
+      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+*/     //up to bottom camera
+      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
+               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        //camera.setDepthButton(true, 2, 50);
+        //camera.setJaggedEdgesButton(true,20);
+
+
+        Geometries geometries = new Geometries(
+
+                //wings
+                //left
+                new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //right
+                new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //BODY OF GREEN
+                new Sphere(new Point(14, 4, 1), 3)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+
+                //HEAD OF GREEN
+                new Sphere(new Point(16, 4, 3.5), 2)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
+
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 5, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 3, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //white around eyes
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //eggs
+                new Sphere(new Point(18, 2,1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 3, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 4, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //mouth beek
+                new Triangle(new Point(19.5, 4.3, 2),new Point(17.5, 5, 4),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
+                //BRANCH
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
+                //house
+                //front of house
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN).setReflectivity(new Double3(0.2)),
+                //right of house
+                new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
+                //left of house. it is crooced so I can view it
+                new Quadrangle(new Point(2, 0, 0.3),new Point(10, 0, 0.3),new Point(10, 0.1, 10),new Point(2,0.1,10)).setColor(Color.BROWN),
+                //back of house
+                new Quadrangle(new Point(2, 0, 0.3),new Point(2, 8, 0.3),new Point(2, 8, 10),new Point(2, 0, 10)).setColor(Color.BROWN),
+                //top of house-roof-left
+                new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
+                //top of house- roof - right
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED),
+                //bubbles in the sky
+                new Sphere(new Point(12, 0, 4),1).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13, 0,7),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(12, 6, 4.5),0.5).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13.5, 8, 4),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE)
+
+        );
+
+        LinkedList<LightSource> lights = new LinkedList<>();
+        lights.add(new Spotlight(Color.MAGENTA,
+                new Point(40, 40, -40),
+                new Vector(-1, -1, 4)).setKl(0.0001).setKq(0.0001));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)).setKl(0.001).setKq(0.0001));
+
+        lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -2)));
+
+
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+
+        ImageWriter imageWriter = new ImageWriter("bird with soft shadows", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(true,30))
+                .renderImage()
+                .writeToImage();
+    }
+    @Test
+    public void birdWithDepthOfField() {
+        //front camera
+        Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+        //side camera
+      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+*/     //up to bottom camera
+      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
+               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        camera.setDepthButton(true, 3, 50);
+       // camera.setJaggedEdgesButton(true,20);
+
+
+        Geometries geometries = new Geometries(
+
+                //wings
+                //left
+                new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //right
+                new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //BODY OF GREEN
+                new Sphere(new Point(14, 4, 1), 3)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+
+                //HEAD OF GREEN
+                new Sphere(new Point(16, 4, 3.5), 2)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
+
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 5, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 3, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //white around eyes
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //eggs
+                new Sphere(new Point(18, 2,1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 3, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 4, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //mouth beek
+                new Triangle(new Point(19.5, 4.3, 2),new Point(17.5, 5, 4),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
+                //BRANCH
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
+                //house
+                //front of house
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN).setReflectivity(new Double3(0.2)),
+                //right of house
+                new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
+                //left of house. it is crooced so I can view it
+                new Quadrangle(new Point(2, 0, 0.3),new Point(10, 0, 0.3),new Point(10, 0.1, 10),new Point(2,0.1,10)).setColor(Color.BROWN),
+                //back of house
+                new Quadrangle(new Point(2, 0, 0.3),new Point(2, 8, 0.3),new Point(2, 8, 10),new Point(2, 0, 10)).setColor(Color.BROWN),
+                //top of house-roof-left
+                new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
+                //top of house- roof - right
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED),
+                //bubbles in the sky
+                new Sphere(new Point(12, 0, 4),1).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13, 0,7),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(12, 6, 4.5),0.5).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13.5, 8, 4),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE)
+
+        );
+
+        LinkedList<LightSource> lights = new LinkedList<>();
+        lights.add(new Spotlight(Color.MAGENTA,
+                new Point(40, 40, -40),
+                new Vector(-1, -1, 4)).setKl(0.0001).setKq(0.0001));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)).setKl(0.001).setKq(0.0001));
+
+        lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -2)));
+
+
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+
+        ImageWriter imageWriter = new ImageWriter("bird with depth of field", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2))//.setSoftShadowsButton(false,30))
+                .renderImage()
+                .writeToImage();
+    }
+    @Test
+    public void birdFromUpTop() {
+        //front camera
+      /*  Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        //side camera
+      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+*/     //up to bottom camera
+       Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
+               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+        //camera.setDepthButton(true, 2, 50);
+        //camera.setJaggedEdgesButton(true,20);
+
+
+        Geometries geometries = new Geometries(
+
+                //wings
+                //left
+                new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //right
+                new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //BODY OF GREEN
+                new Sphere(new Point(14, 4, 1), 3)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+
+                //HEAD OF GREEN
+                new Sphere(new Point(16, 4, 3.5), 2)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
+
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 5, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 3, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //white around eyes
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //eggs
+                new Sphere(new Point(18, 2,1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 3, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 4, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //mouth beek
+                new Triangle(new Point(19.5, 4.3, 2),new Point(17.5, 5, 4),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
+                //BRANCH
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
+                //house
+                //front of house
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN).setReflectivity(new Double3(0.2)),
+                //right of house
+                new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
+                //left of house. it is crooced so I can view it
+                new Quadrangle(new Point(2, 0, 0.3),new Point(10, 0, 0.3),new Point(10, 0.1, 10),new Point(2,0.1,10)).setColor(Color.BROWN),
+                //back of house
+                new Quadrangle(new Point(2, 0, 0.3),new Point(2, 8, 0.3),new Point(2, 8, 10),new Point(2, 0, 10)).setColor(Color.BROWN),
+                //top of house-roof-left
+                new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
+                //top of house- roof - right
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED),
+                //bubbles in the sky
+                new Sphere(new Point(12, 0, 4),1).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13, 0,7),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(12, 6, 4.5),0.5).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13.5, 8, 4),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE)
+
+        );
+
+        LinkedList<LightSource> lights = new LinkedList<>();
+        lights.add(new Spotlight(Color.MAGENTA,
+                new Point(40, 40, -40),
+                new Vector(-1, -1, 4)).setKl(0.0001).setKq(0.0001));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)).setKl(0.001).setKq(0.0001));
+
+        lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -2)));
+
+
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+
+        ImageWriter imageWriter = new ImageWriter("bird from up top", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
+                .renderImage()
+                .writeToImage();
+    }
+
+    @Test
+    public void birdFromSide() {
+        //front camera
+       /* Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        //side camera
+        Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+     //up to bottom camera
+      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
+               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        //camera.setDepthButton(true, 2, 50);
+        //camera.setJaggedEdgesButton(true,20);
+
+
+        Geometries geometries = new Geometries(
+
+                //wings
+                //left
+                new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //right
+                new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //BODY OF GREEN
+                new Sphere(new Point(14, 4, 1), 3)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+
+                //HEAD OF GREEN
+                new Sphere(new Point(16, 4, 3.5), 2)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
+
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 5, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 3, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //white around eyes
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //eggs
+                new Sphere(new Point(18, 2,1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 3, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 4, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //mouth beek
+                new Triangle(new Point(19.5, 4.3, 2),new Point(17.5, 5, 4),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
+                //BRANCH
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
+                //house
+                //front of house
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN).setReflectivity(new Double3(0.2)),
+                //right of house
+                new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
+                //left of house. it is crooced so I can view it
+                new Quadrangle(new Point(2, 0, 0.3),new Point(10, 0, 0.3),new Point(10, 0.1, 10),new Point(2,0.1,10)).setColor(Color.BROWN),
+                //back of house
+                new Quadrangle(new Point(2, 0, 0.3),new Point(2, 8, 0.3),new Point(2, 8, 10),new Point(2, 0, 10)).setColor(Color.BROWN),
+                //top of house-roof-left
+                new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
+                //top of house- roof - right
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED),
+                //bubbles in the sky
+                new Sphere(new Point(12, 0, 4),1).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13, 0,7),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(12, 6, 4.5),0.5).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13.5, 8, 4),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE)
+
+        );
+
+        LinkedList<LightSource> lights = new LinkedList<>();
+        lights.add(new Spotlight(Color.MAGENTA,
+                new Point(40, 40, -40),
+                new Vector(-1, -1, 4)).setKl(0.0001).setKq(0.0001));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)).setKl(0.001).setKq(0.0001));
+
+        lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -2)));
+
+
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+
+        ImageWriter imageWriter = new ImageWriter("bird from side", 600, 600);
         camera.setImageWriter(imageWriter)
                 .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
                 .renderImage()
@@ -285,6 +680,147 @@ class CameraTest {
     /**
      * our test
      */
+    @Test
+    public void ourJaggedEdgesOn() {
+        Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
+                .setVPSize(200, 200).setVPDistance(1000);
+
+        camera.setJaggedEdgesButton(true, 9);
+
+
+        Geometries geometries = new Geometries(//close to camera bigger
+                new Sphere(new Point(40, 0, 2.5), 3)
+                        .setEmission(Color.GREEN)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)));
+        LinkedList<LightSource> lights = new LinkedList<>();
+
+//        lights.add(new Spotlight(new Color(700, 400, 400),
+//                new Point(40, 40, 115),
+//                new Vector(-1, -1, -4)));
+//        lights.add(new PointLight(Color.BLUE, new Point(100, -100, 100)));
+        lights.add(new DirectionalLight(Color.MAGENTA,new Vector(-1,-1,-1)));
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+        ImageWriter imageWriter = new ImageWriter("jagged edges on - 9", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2))
+                .renderImage()
+                .writeToImage();
+    }
+    @Test
+    public void birdFromFront() {
+        //front camera
+        Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(true);
+        //side camera
+        /*Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        //up to bottom camera
+      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
+               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+        //camera.setDepthButton(true, 2, 50);
+        //camera.setJaggedEdgesButton(true,20);
+
+
+        Geometries geometries = new Geometries(
+
+                //wings
+                //left
+                new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //right
+                new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
+                //BODY OF GREEN
+                new Sphere(new Point(14, 4, 1), 3)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+
+                //HEAD OF GREEN
+                new Sphere(new Point(16, 4, 3.5), 2)
+                        .setEmission(Color.YELLOW)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
+
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 5, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(17, 3, 4.6), 0.3)
+                        .setEmission(Color.BLACK)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //white around eyes
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL OF GREEN
+                new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
+                        .setEmission(Color.WHITE)
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //eggs
+                new Sphere(new Point(18, 2,1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 3, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                new Sphere(new Point(18, 4, 1), 0.7)
+                        .setEmission(new Color(java.awt.Color.gray))
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //mouth beek
+                new Triangle(new Point(19.5, 4.3, 2),new Point(17.5, 5, 4),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5,4.3, 4.5),new Point(17.5, 3.3, 4)).setEmission(Color.ORANGE),
+                new Triangle(new Point(19.5, 4.3, 3),new Point(17.5, 5, 4),new Point(17.5,4.3, 4.5)).setEmission(Color.ORANGE),
+                //BRANCH
+                new Quadrangle(new Point(17, 0, 0.3),new Point(17, 8, 0.3),new Point(19, 8, 0.3),new Point(19, 0, 0.3)).setColor(Color.BROWN),
+                //house
+                //front of house
+                new Quadrangle(new Point(10, 0, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(10, 0, 10)).setColor(Color.BROWN).setReflectivity(new Double3(0.2)),
+                //right of house
+                new Quadrangle(new Point(2, 8, 0.3),new Point(10, 8, 0.3),new Point(10, 8, 10),new Point(2,8,10)).setColor(Color.BROWN),
+                //left of house. it is crooced so I can view it
+                new Quadrangle(new Point(2, 0, 0.3),new Point(10, 0, 0.3),new Point(10, 0.1, 10),new Point(2,0.1,10)).setColor(Color.BROWN),
+                //back of house
+                new Quadrangle(new Point(2, 0, 0.3),new Point(2, 8, 0.3),new Point(2, 8, 10),new Point(2, 0, 10)).setColor(Color.BROWN),
+                //top of house-roof-left
+                new Quadrangle(new Point(11, 4, 13),new Point(11, -1, 10),new Point(1, -1, 10),new Point(1, 4, 13)).setColor(Color.RED),
+                //top of house- roof - right
+                new Quadrangle(new Point(11, 9, 10),new Point(11, 4, 13),new Point(1, 4, 13),new Point(1, 9, 10)).setColor(Color.RED),
+                //bubbles in the sky
+                new Sphere(new Point(12, 0, 4),1).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13, 0,7),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(12, 6, 4.5),0.5).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE),
+                new Sphere(new Point(13.5, 8, 4),0.7).setMaterial(new Material().setkT(0.99).setShininess(30)).setEmission(Color.BLUE)
+
+        );
+
+        LinkedList<LightSource> lights = new LinkedList<>();
+        lights.add(new Spotlight(Color.MAGENTA,
+                new Point(40, 40, -40),
+                new Vector(-1, -1, 4)).setKl(0.0001).setKq(0.0001));
+        lights.add(new PointLight(Color.YELLOW, new Point(100, -100, 100)).setKl(0.001).setKq(0.0001));
+
+        lights.add(new DirectionalLight(Color.GOLD,new Vector(-2, -2, -2)));
+
+
+
+        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
+                .setLights(lights).build();
+
+
+        ImageWriter imageWriter = new ImageWriter("bird from front", 600, 600);
+        camera.setImageWriter(imageWriter)
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
+                .renderImage()
+                .writeToImage();
+    }
+
+    /**
+     * our test
+     */
+/*
     @Test
     public void ourJaggedEdgesOn() {
         Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
@@ -343,6 +879,7 @@ class CameraTest {
                 .renderImage()
                 .writeToImage();
     }
+*/
 
 
     /**

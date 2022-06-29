@@ -3,9 +3,9 @@ package geometries;
 import primitives.Point;
 import primitives.Ray;
 
-import java.util.*;
-
-import static java.lang.System.out;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /***
  * Class Geometries implements intersectable and represents a list of intersectables in order to
@@ -16,23 +16,34 @@ public class Geometries extends Intersectable {
 
     LinkedList<Intersectable> _geometries;
 
-    //constructor recieves nothing and creates empty list
+    /***
+     *  constructor recieves nothing and creates empty list
+     */
     public Geometries() {
         _geometries = new LinkedList<>();
     }
 
-    //constructor recieves group of intersectables and creates list out of them
+    /***
+     * constructor recieves group of intersectables and creates list out of them
+     * @param geometries list of intersectables
+     */
     public Geometries(Intersectable... geometries) {
         _geometries = new LinkedList<>();
         Collections.addAll(_geometries, geometries);
     }
 
-    //add function recieves group of intersectables and adds them to list
+    /***
+     * add function recieves group of intersectables and adds them to list
+     * @param geometries list of intersectables
+     */
     public void add(Intersectable... geometries) {
         Collections.addAll(_geometries, geometries);
     }
 
-
+    /***
+     * getter
+     * @return the list of geometries
+     */
     public LinkedList<Intersectable> getGeometries() {
         return _geometries;
     }

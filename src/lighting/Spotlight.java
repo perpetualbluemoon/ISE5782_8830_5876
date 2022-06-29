@@ -28,7 +28,7 @@ public class Spotlight extends PointLight {
     /***
      * this function calculates the color
      * get light according to mathematical calculations
-     *  𝑰𝑳 =point *max(0,l*dir)
+     *  IL =point *max(0,l*dir)
      * @param p point on the object
      * @return the color for that point
      */

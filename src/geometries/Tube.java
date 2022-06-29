@@ -24,15 +24,26 @@ public class Tube extends Geometry {
         this.radius = radius;
     }
 
-    //getters
+    /***
+     * getter
+     * @return axisRay center of tube
+     */
     public Ray getAxisRay() {
         return axisRay;
     }
 
+    /***
+     * getter
+     * @return radius of tube
+     */
     public double getRadius() {
         return radius;
     }
 
+    /***
+     * to string
+     * @return string describing tube
+     */
     @Override
     public String toString() {
         return "Tube{" +

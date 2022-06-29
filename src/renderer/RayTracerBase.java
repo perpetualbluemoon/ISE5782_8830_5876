@@ -4,7 +4,13 @@ import primitives.Color;
 import primitives.Ray;
 import scene.Scene;
 
+/***
+ * class RayTracerBase is the parent class to RayTracerBasic and as the basic functions for ray tracing
+ */
 public abstract class RayTracerBase {
+    /***
+     * scene after building
+     */
     protected Scene _scene;
 
     /***

@@ -21,19 +21,60 @@ public class Color {
      * Black color = (0,0,0)
      */
     public static final Color BLACK = new Color();
-    //color sent as double (255d) so that it doesn't need to convert it
+    /***
+     * color sent as double (255d) so that it doesn't need to convert it
+     */
+    /***
+     * static colors for easy use
+     */
     public static final Color BLUE = new Color(0,0,255d);
+    /***
+     * static colors for easy use
+     */
     public static final Color YELLOW = new Color(150,150,0);
+    /***
+     * static colors for easy use
+     */
     public static final Color RED = new Color(java.awt.Color.RED);
+    /***
+     * static colors for easy use
+     */
     public static final Color GREEN = new Color(java.awt.Color.GREEN);
+    /***
+     * static colors for easy use
+     */
     public static final Color SILVER = new Color(192,192,192);
+    /***
+     * static colors for easy use
+     */
     public static final Color GOLD = new Color(200,100,0);
+    /***
+     * static colors for easy use
+     */
     public static final Color MAGENTA = new Color(255,0,255);
+    /***
+     * static colors for easy use
+     */
     public static final Color ORANGE = new Color(255,127,80);
+    /***
+     * static colors for easy use
+     */
     public static final Color BROWN = new Color(155,103,60);
+    /***
+     * static colors for easy use
+     */
     public static final Color WHITE = new Color(255,255,255);
+    /***
+     * static colors for easy use
+     */
     public static final Color DARK_GRAY = new Color(105,105,105);
+    /***
+     * static colors for easy use
+     */
     public static final Color LIGHT_BLUE = new Color(179,236,230);
+    /***
+     * static colors for easy use
+     */
     public static final Color MINT_GREEN = new Color(144, 238, 144);
 
     /**
@@ -124,7 +165,6 @@ public class Color {
 
     /**
      * Scale the color by a scalar
-     *
      * @param k scale factor
      * @return new Color object which is the result of the operation
      */
@@ -163,6 +203,11 @@ public class Color {
         return "rgb:" + rgb;
     }
 
+    /***
+     * @param other other color
+     * @return boolean if colors are equal in numbers.
+     * function for easy debugging
+     */
     public boolean equals(Color other) {
         if (alignZero(this.rgb.d1-other.rgb.d1)!=0)
         {

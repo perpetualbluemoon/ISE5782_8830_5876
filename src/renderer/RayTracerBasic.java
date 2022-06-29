@@ -10,11 +10,18 @@ import java.util.List;
 
 import static primitives.Util.alignZero;
 
-
+/***
+ * class RayTracerBasic used for finding the color for pixels
+ */
 public class RayTracerBasic extends RayTracerBase {
 
-    //added in part7 in order to support shadows
+    /***
+     * added in part7 in order to support shadows
+     */
     private static final double DELTA = 0.1;
+    /***
+     * added in part7 in order to support shadows
+     */
     private static final double EPSILON = 0.001;
 
     //max values to stop recursion of functions calling each other
@@ -28,6 +35,10 @@ public class RayTracerBasic extends RayTracerBase {
     //root of number of points around the lightsource
     private static int ROOT_OF_MOVED_LIGHT_POINTS = 1;
 
+    /***
+     * creates a scene using the parent class
+     * @param scene the scene
+     */
     public RayTracerBasic(Scene scene) {
         super(scene);
     }
@@ -38,18 +49,12 @@ public class RayTracerBasic extends RayTracerBase {
      */
     @Override
     public Color traceRay(Ray ray) {
-        //LinkedList<GeoPoint> listPointsIntersections = (LinkedList<GeoPoint>) _scene._geometries.findGeoIntersectionsHelper(ray);
-        //if (listPointsIntersections == null || listPointsIntersections.isEmpty()) {
-        //   return _scene._background;//.add(_scene._ambientLight.getIntensity());
-        //}
-
         //GeoPoint closestPoint = ray.findClosestGeoPoint(listPointsIntersections);
         GeoPoint closestPoint = findClosestGeoIntersection(ray);
         //out.print(closestPoint);
         if (closestPoint == null)
             return _scene.getBackground();
-        Color thisPixelColor = calcColor(closestPoint, ray);
-        return thisPixelColor;
+        return calcColor(closestPoint, ray);
     }
 
     /***
@@ -58,8 +63,7 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private double calcDiffusive(double kD, double nl) {
         //according to the phong model
-        double calcD = kD * Math.abs(nl);
-        return calcD;
+        return kD * Math.abs(nl);
     }
 
     /***
@@ -70,8 +74,7 @@ public class RayTracerBasic extends RayTracerBase {
         //according to the phong model
         Vector r = createR(l, n);
         double max = Math.max(0, v.scale(-1).dotProduct(r));
-        double calcS = kS * Math.pow(max, shininess);
-        return calcS;
+        return kS * Math.pow(max, shininess);
     }
 
     private Vector createR(Vector l, Vector n) {
@@ -128,9 +131,8 @@ public class RayTracerBasic extends RayTracerBase {
 
         //level-1 to ensure that the recursion stops
         //scales by kx to return only a percentage of the color according to the coefficient
-        Color c = calcColor(gp, ray, level - 1, kkx).scale(kx);
         //out.print(c);
-        return c;
+        return calcColor(gp, ray, level - 1, kkx).scale(kx);
     }
 
     /***
@@ -172,6 +174,8 @@ public class RayTracerBasic extends RayTracerBase {
      * inner function
      * @param closestPoint the point that we want to find the color of
      * @param ray the ray from the camera through a pixel
+     * @param k influence of current recursion
+     * @param level number of recursion
      * @return the color for that point
      * recursive function
      */
@@ -207,11 +211,7 @@ public class RayTracerBasic extends RayTracerBase {
     private boolean unshaded(GeoPoint gp, Vector l, Vector n, LightSource lightSource) {
         Vector lightDirection = l.scale(-1); //from point to light source
         //took a point adding epsilon in the direction of the normal
-        Ray lightRay;
-        if (n.dotProduct(lightDirection) > 0)
-            lightRay = new Ray(gp._geoPoint, n, lightDirection);
-        else
-            lightRay = new Ray(gp._geoPoint, n, lightDirection);
+        Ray lightRay = new Ray(gp._geoPoint, n, lightDirection);
         //checks for intersections between the point and the light
         List<GeoPoint> intersections = _scene.getGeometries().findGeoIntersections(lightRay);
         //if there is nothing between the point and the light then the point is unshaded
@@ -239,8 +239,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @return the reflected ray
      */
     public Ray constructReflectedRay(Point p, Vector v, Vector n) {
-        Ray reflectedRay = new Ray(p, n, createR(v, n));
-        return reflectedRay;
+        return new Ray(p, n, createR(v, n));
     }
 
     /***
@@ -253,8 +252,7 @@ public class RayTracerBasic extends RayTracerBase {
     public Ray constructRefractedRay(Point p, Vector v, Vector n) {
         //something transparent will show only the objects behind it.
         //we are moving the point using minus delta because we are moving inward in the opposite direction of the normal
-        Ray refractedRay = new Ray(p, n, v);
-        return refractedRay;
+        return new Ray(p, n, v);
     }
 
     /***
@@ -268,8 +266,7 @@ public class RayTracerBasic extends RayTracerBase {
             return null;
         if (l.isEmpty())
             return null;
-        GeoPoint p = ray.findClosestGeoPoint(l);
-        return p;
+        return ray.findClosestGeoPoint(l);
     }
 
     /***
@@ -283,7 +280,7 @@ public class RayTracerBasic extends RayTracerBase {
         //This while is so that we can break out of the soft shadows clause if our light source is directional light
         //which returns null
         boolean x = true;
-        while (x == true) {
+        while (x) {
             x = false;
             if (_softShadowsButton) {
                 //in light: field:  size of plane to move in
@@ -376,7 +373,7 @@ public class RayTracerBasic extends RayTracerBase {
     /***
      * ON/OFF button for soft shadows
      * @param softShadowsButton boolean enable soft shadows
-     * @return
+     * @return RayTracerBasic for builder-like use
      */
     public RayTracerBasic setSoftShadowsButton(boolean softShadowsButton) {
         _softShadowsButton = softShadowsButton;
@@ -387,6 +384,7 @@ public class RayTracerBasic extends RayTracerBase {
      *
      * @param softShadowsButton boolean enable soft shadows
      * @param number_of_points number of points for caluculating shadows
+     * @return RayTracerBasic for builder-like implementation
      */
     public RayTracerBasic setSoftShadowsButton(boolean softShadowsButton, int number_of_points) {
         _softShadowsButton = softShadowsButton;

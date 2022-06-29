@@ -8,12 +8,23 @@ import static primitives.Util.isZero;
  */
 
 public class Vector extends Point{
+
+    /***
+     * constructor
+     * @param x first coordinate
+     * @param y second coordinate
+     * @param z third coordinate
+     */
     public Vector(double x, double y, double z){
         super(x,y,z);
         if(_xyz.equals(Double3.ZERO))
             throw new IllegalArgumentException("creation of Vector (0,0,0)");
     }
 
+    /***
+     * constructor creates vector from Double3
+     * @param xyz coordinates of the vector
+     */
     public Vector(Double3 xyz) {
         super(xyz);
         if(_xyz.equals(Double3.ZERO))

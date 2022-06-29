@@ -136,14 +136,24 @@ public class Double3 {
 		return d1 < k && d2 < k && d3 < k;
 	}
 
+	/***
+	 * @return double d1 of double 3
+	 */
 	public double getD1() {
 		return d1;
 	}
 
+	/***
+	 *
+	 * @return double d2 of double 3
+	 */
 	public double getD2() {
 		return d2;
 	}
 
+	/***
+	 * @return double d3 of double 3
+	 */
 	public double getD3() {
 		return d3;
 	}

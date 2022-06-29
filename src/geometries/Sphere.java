@@ -9,23 +9,43 @@ import java.util.List;
 import static java.lang.Math.sqrt;
 import static primitives.Util.alignZero;
 
+/***
+ * class Sphere holds the information and functions used for a sphere
+ */
 public class Sphere extends Geometry {
     final Point center;
     double radius;
 
+    /***
+     * constructor
+     * @param center of the sphere
+     * @param radius radius of the sphere
+     */
     public Sphere(Point center, double radius) {
         this.center = center;
         this.radius = radius;
     }
 
+    /***
+     * getter
+     * @return center
+     */
     public Point getCenter() {
         return center;
     }
 
+    /***
+     * getter
+     * @return radius of sphere
+     */
     public double getRadius() {
         return radius;
     }
 
+    /***
+     * tostring
+     * @return string describing the object
+     */
     @Override
     public String toString() {
         return "Sphere{" +
@@ -44,6 +64,11 @@ public class Sphere extends Geometry {
         return normal.normalize();
     }
 
+    /***
+     * function find geo intersections helper function used by ray tracer basic
+     * @param ray the ray to check for intersections
+     * @return list of geo intersections
+     */
     @Override
     public List<GeoPoint> findGeoIntersectionsHelper(Ray ray) {
         Point P0 = ray.getP0();
@@ -94,11 +119,14 @@ public class Sphere extends Geometry {
         }
         return null;
     }
+
     /**
      * Method for {@link geometries.Sphere#findGeoIntersectionsHelper(Ray)}.
+     * This is the older function. It is still here to enable the original tests to run
      * This method finds intersections of a ray with a sphere and returns them in a list of GeoPoint
+     * @param ray the ray to find intersections with
+     * @return list of geopoints
      */
-    //@Override
     public List<GeoPoint> findGeoIntersectionsHelperOriginal(Ray ray) {
         Point O = center;// center of the sphere
 

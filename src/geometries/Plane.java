@@ -1,10 +1,11 @@
 package geometries;
 
-import primitives.*;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
 import java.util.List;
 
-import static java.lang.System.out;
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
 
@@ -17,11 +18,23 @@ public class Plane extends Geometry {
     final Vector _normal;
 
 
+    /***
+     * constructor
+     * @param g0 point on the plane
+     * @param normal normal to the plane
+     */
     public Plane(Point g0, Vector normal) {
         _g0 = g0;
         _normal = normal.normalize();
     }
 
+    /***
+     * constructor using four points
+     * @param p1 first point on the plane
+     * @param p2 second point on the plane
+     * @param p3 third point on the plane
+     * @param g0 initial point on the plane
+     */
     public Plane(Point p1, Point p2, Point p3, Point g0) {
         _g0 = p1;
         //find first vector
@@ -46,6 +59,10 @@ public class Plane extends Geometry {
                 '}';
     }
 
+    /***
+     * getter
+     * @return g0
+     */
     public Point getG0() {
         return _g0;
     }
@@ -55,7 +72,10 @@ public class Plane extends Geometry {
         return getNormal();
     }
 
-    //we added .normalize() and then it worked but the normal should be normalized already
+    /***
+     * returns normal vector which is normalized again to be safe
+     * @return normal vector
+     */
     public Vector getNormal() {
         return _normal.normalize();
     }

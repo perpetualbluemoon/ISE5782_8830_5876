@@ -12,17 +12,37 @@ import static java.lang.Math.max;
  */
 
 public class Point {
+    /***
+     * point zero is frequently used
+     */
     public static final Point ZERO = new Point(0, 0, 0);
+    /***
+     * coordinates of the point
+     */
     final Double3 _xyz;
 
+    /***
+     * constructor which recieves 3 doubles
+     * @param d1 first coordinate
+     * @param d2 second coordinate
+     * @param d3 third coordinate
+     */
     public Point(double d1, double d2, double d3) {
         _xyz = new Double3(d1, d2, d3);
     }
 
+    /***
+     * setter which recieves Double3
+     * @param xyz the Double3 for creating the Point
+     */
     public Point(Double3 xyz) {
         _xyz = xyz;
     }
 
+    /***
+     * getter
+     * @return the Double3 coordinates
+     */
     public Double3 getXyz() {
         return _xyz;
     }
@@ -90,6 +110,11 @@ public class Point {
         return a * a + b * b + c * c;
     }
 
+    /***
+     * finds distance between a the current point and a different point
+     * @param p the point to find the distance from
+     * @return the distance
+     */
     public double distance(Point p) {
         return Math.sqrt(distanceSquared(p));
     }
@@ -122,6 +147,16 @@ public class Point {
         return movedPoint;
     }
 
+    /***
+     * creates a list of moved points around a point
+     * @param edgeOfPixel corner of the pixel
+     * @param _Vup vector up
+     * @param _Vright vector right
+     * @param sizeHOfPixel height of pixel
+     * @param sizeWOfPixel width of pixel
+     * @param numOfMiniPixels how many minipixels to split into
+     * @return list of moved points
+     */
     public LinkedList<Point> createListOfMovedPoints(Point edgeOfPixel, Vector _Vup, Vector _Vright, double sizeHOfPixel, double sizeWOfPixel, int numOfMiniPixels) {
         //move out, this is current point//
         // out.print(thisPixelPoint);
