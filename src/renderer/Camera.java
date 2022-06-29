@@ -52,7 +52,7 @@ public class Camera {
     //ON/OFF button default is off
     private static boolean _MultiThreadingButton = false;
     private static int NUM_OF_THREADS = 1;
-    private double _debugPrint = 0;
+    private double printInterval = 0;
 
     /**
      *  feature of part 9
@@ -238,7 +238,7 @@ public class Camera {
             throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
         //implementing the multi-threading time improvement of part 9
         if (_MultiThreadingButton) {
-            Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), _debugPrint); //debug print is print interval
+            Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), printInterval); //debug print is print interval
             int threadsCount = 3;
             while (threadsCount-- > 0) {
                 new Thread(() -> {
@@ -255,8 +255,9 @@ public class Camera {
 
                     }
                 }).start();
-            }
-            Pixel.waitToFinish();
+
+            } Pixel.waitToFinish();
+
 
         } else { //when not using multithreading
             //for every row
@@ -718,7 +719,7 @@ public class Camera {
      * @return the camera
      */
     public Camera setDebugPrint(double v) {
-        _debugPrint = v;
+        printInterval = v;
         return this;
     }
 

@@ -1,5 +1,7 @@
 package renderer;
 
+import static java.lang.System.out;
+
 /**
  * Pixel is a helper class. It is used for multi-threading in the renderer and
  * for follow up its progress.<br/>
@@ -32,8 +34,8 @@ class Pixel {
     /**
      * Initialize pixel data for multi-threading
      *
-     * @param maxRows  the amount of pixel rows -ny
-     * @param maxCols  the amount of pixel columns -nx
+     * @param maxRows  the amount of pixel rows
+     * @param maxCols  the amount of pixel columns
      * @param interval print time interval in seconds, 0 if printing is not required
      */
     static void initialize(int maxRows, int maxCols, double interval) {
@@ -65,7 +67,6 @@ class Pixel {
                 col = cCol;
                 return true;
             }
-            //we got to max col, to end of row
             cCol = 0;
             ++cRow;
             if (cRow < maxRows) {
@@ -81,7 +82,6 @@ class Pixel {
      * Finish pixel processing
      */
     static void pixelDone() {
-        //make sure no one does it while i do it
         synchronized (mutexPixels) {
             ++pixels;
         }
@@ -92,20 +92,23 @@ class Pixel {
      * run from the main thread
      */
     public static void waitToFinish() {
-        if (print)
-            System.out.printf(PRINT_FORMAT, 0d);
 
+        out.print("last: "+last+'\n');
+        out.print("totalpixels: "+totalPixels+'\n');
+        if (print)
+            out.printf(PRINT_FORMAT, 0d);
         while (last < totalPixels) {
+            //out.print("hello");
             printPixel();
             try {
                 Thread.sleep(printInterval);
             } catch (InterruptedException ignore) {
                 if (print)
-                    System.out.print("");
+                    out.print("");
             }
         }
         if (print)
-            System.out.println("100.0%");
+            out.println("100.0%");
     }
 
     /**
@@ -118,7 +121,7 @@ class Pixel {
             if (lastPrinted != percentage) {
                 last = current;
                 lastPrinted = percentage;
-                System.out.printf(PRINT_FORMAT, percentage / 10d);
+                out.printf(PRINT_FORMAT, percentage / 10d);
             }
         }
     }

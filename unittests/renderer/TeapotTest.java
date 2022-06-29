@@ -11,8 +11,6 @@ import scene.Scene;
 
 import java.util.LinkedList;
 
-import static java.awt.Color.YELLOW;
-
 /**
  * Test rendering an image
  *
@@ -21,7 +19,7 @@ import static java.awt.Color.YELLOW;
 public class TeapotTest {
     private final ImageWriter imageWriter = new ImageWriter("teapot", 800, 800);
 
-    private final Camera camera = new Camera(new Point(0, 0, -1000), new Vector(0, 0, 1), new Vector(0, 1, 0)) //
+    private final Camera camera = new Camera(new Point(-1000,0,0), new Vector(1, 0, 0), new Vector(0, 1, 0)) //
             .setVPDistance(1000).setVPSize(200, 200) //
             .setImageWriter(imageWriter) //
             .setMultithreading(3).setDebugPrint(0.1);
