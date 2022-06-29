@@ -974,7 +974,7 @@ class CameraTest {
         Camera camera = new Camera(new Point(55, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
                 .setVPSize(300, 300).setVPDistance(1000);
 
-        camera.setJaggedEdgesButton(true, 3);
+        //camera.setJaggedEdgesButton(true, 3);
 
 
         Point p0 = new Point(0, -3, 5);
@@ -1044,7 +1044,7 @@ class CameraTest {
 
         ImageWriter imageWriter = new ImageWriter("our test shapes chaya", 600, 600);
         camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2))
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(true))
                 .renderImage()
                 .writeToImage();
     }
