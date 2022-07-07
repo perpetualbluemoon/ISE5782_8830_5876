@@ -143,14 +143,8 @@ class CameraTest {
     public void birdWithJaggedEdjes() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-              .setVPSize(300, 300).setVPDistance(800).setMultithreading(4);//etAdaptiveSuperSampling(true);
-        //side camera
-      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-*/     //up to bottom camera
-      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-       //camera.setDepthButton(true, 2, 50);
+              .setVPSize(300, 300).setVPDistance(800).setMultithreading(3);//etAdaptiveSuperSampling(true);
+
         camera.setJaggedEdgesButton(true,20);
 
 
@@ -252,14 +246,7 @@ class CameraTest {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
                 .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-        //side camera
-      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-*/     //up to bottom camera
-      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-        //camera.setDepthButton(true, 2, 50);
-        //camera.setJaggedEdgesButton(true,20);
+
 
 
         Geometries geometries = new Geometries(
@@ -359,12 +346,7 @@ class CameraTest {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
                 .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-        //side camera
-      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-*/     //up to bottom camera
-      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+
         camera.setDepthButton(true, 3, 50);
        // camera.setJaggedEdgesButton(true,20);
 
@@ -463,17 +445,10 @@ class CameraTest {
     }
     @Test
     public void birdFromUpTop() {
-        //front camera
-      /*  Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-        //side camera
-      /*  Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-*/     //up to bottom camera
+
        Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-        //camera.setDepthButton(true, 2, 50);
-        //camera.setJaggedEdgesButton(true,20);
+
 
 
         Geometries geometries = new Geometries(
@@ -571,17 +546,11 @@ class CameraTest {
 
     @Test
     public void birdFromSide() {
-        //front camera
-       /* Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
+
         //side camera
         Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
                 .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
-     //up to bottom camera
-      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-        //camera.setDepthButton(true, 2, 50);
-        //camera.setJaggedEdgesButton(true,20);
+
 
 
         Geometries geometries = new Geometries(
@@ -694,10 +663,7 @@ class CameraTest {
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)));
         LinkedList<LightSource> lights = new LinkedList<>();
 
-//        lights.add(new Spotlight(new Color(700, 400, 400),
-//                new Point(40, 40, 115),
-//                new Vector(-1, -1, -4)));
-//        lights.add(new PointLight(Color.BLUE, new Point(100, -100, 100)));
+
         lights.add(new DirectionalLight(Color.MAGENTA,new Vector(-1,-1,-1)));
 
         Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
@@ -713,15 +679,7 @@ class CameraTest {
     public void birdFromFront() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(true);
-        //side camera
-        /*Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-        //up to bottom camera
-      /* Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);*/
-        //camera.setDepthButton(true, 2, 50);
-        //camera.setJaggedEdgesButton(true,20);
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(true,);
 
 
         Geometries geometries = new Geometries(
@@ -817,69 +775,6 @@ class CameraTest {
                 .writeToImage();
     }
 
-    /**
-     * our test
-     */
-/*
-    @Test
-    public void ourJaggedEdgesOn() {
-        Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
-                .setVPSize(200, 200).setVPDistance(1000);
-
-        camera.setJaggedEdgesButton(true, 9);
-
-
-        Geometries geometries = new Geometries(//close to camera bigger
-                new Sphere(new Point(40, 0, 2.5), 3)
-                        .setEmission(Color.GREEN)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)));
-        LinkedList<LightSource> lights = new LinkedList<>();
-
-//        lights.add(new Spotlight(new Color(700, 400, 400),
-//                new Point(40, 40, 115),
-//                new Vector(-1, -1, -4)));
-//        lights.add(new PointLight(Color.BLUE, new Point(100, -100, 100)));
-        lights.add(new DirectionalLight(Color.MAGENTA,new Vector(-1,-1,-1)));
-
-        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
-                .setLights(lights).build();
-
-        ImageWriter imageWriter = new ImageWriter("jagged edges on - 9", 600, 600);
-        camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2))
-                .renderImage()
-                .writeToImage();
-    }
-    @Test
-    public void jaggedEdgesOff() {
-        Camera camera = new Camera(new Point(80, 0, 2), new Vector(-1, 0, 0), new Vector(0, 0, 1))
-                .setVPSize(200, 200).setVPDistance(1000);
-
-        camera.setJaggedEdgesButton(false, 9);
-
-
-        Geometries geometries = new Geometries(//close to camera bigger
-                new Sphere(new Point(40, 0, 2.5), 3)
-                        .setEmission(Color.GREEN)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)));
-        LinkedList<LightSource> lights = new LinkedList<>();
-
-//        lights.add(new Spotlight(new Color(700, 400, 400),
-//                new Point(40, 40, 115),
-//                new Vector(-1, -1, -4)));
-//        lights.add(new PointLight(Color.BLUE, new Point(100, -100, 100)));
-        lights.add(new DirectionalLight(Color.MAGENTA,new Vector(-1,-1,0)));
-
-        Scene scene2 = new Scene.SceneBuilder("Test scene").setGeometries(geometries)
-                .setLights(lights).build();
-
-        ImageWriter imageWriter = new ImageWriter("jagged edges off 9", 600, 600);
-        camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2))
-                .renderImage()
-                .writeToImage();
-    }
-*/
 
 
     /**
@@ -974,7 +869,6 @@ class CameraTest {
         Camera camera = new Camera(new Point(55, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
                 .setVPSize(300, 300).setVPDistance(1000);
 
-        //camera.setJaggedEdgesButton(true, 3);
 
 
         Point p0 = new Point(0, -3, 5);
@@ -1015,18 +909,10 @@ class CameraTest {
                         .setEmission(Color.BLUE)
                         .setMaterial(new Material().setKd(0.2).setKs(0.1).setShininess(30)),
 
-                //floor
-                //new Quadrangle(p16, p17, p19, p18).setColor(Color.YELLOW)
+
                 new Triangle(p16,p17,p19).setEmission(Color.DARK_GRAY),
                 new Triangle(p19,p18,p16).setEmission(Color.DARK_GRAY)
 
-                //cube
-                // new Quadrangle(p8, p9, p10, p11),
-                //new Quadrangle(p12, p13, p14, p15),
-                //new Quadrangle(p13, p9, p10, p14),
-                //new Quadrangle(p14, p10, p11, p15),
-                //new Quadrangle(p15, p12, p8, p11),
-                //new Quadrangle(p12, p13, p9, p8)
         );
         LinkedList<LightSource> lights = new LinkedList<>();
 

@@ -95,10 +95,8 @@ class Pixel {
 
         out.print("last: "+last+'\n');
         out.print("totalpixels: "+totalPixels+'\n');
-        if (print)
-            out.printf(PRINT_FORMAT, 0d);
+
         while (last < totalPixels) {
-            //out.print("hello");
             printPixel();
             try {
                 Thread.sleep(printInterval);
@@ -121,7 +119,8 @@ class Pixel {
             if (lastPrinted != percentage) {
                 last = current;
                 lastPrinted = percentage;
-                out.printf(PRINT_FORMAT, percentage / 10d);
+                out.printf(PRINT_FORMAT,percentage / 10d);
+
             }
         }
     }
