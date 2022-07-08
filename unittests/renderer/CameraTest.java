@@ -155,30 +155,30 @@ class CameraTest {
                 new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
                 //right
                 new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
-                //BODY OF GREEN
+                //BODY
                 new Sphere(new Point(14, 4, 1), 3)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
-                //HEAD OF GREEN
+                //HEAD
                 new Sphere(new Point(16, 4, 3.5), 2)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
 
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 5, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 3, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //white around eyes
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
@@ -245,7 +245,7 @@ class CameraTest {
     public void birdWithSoftShadows() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+                .setVPSize(300, 300).setVPDistance(800);
 
 
 
@@ -256,30 +256,29 @@ class CameraTest {
                 new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
                 //right
                 new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
-                //BODY OF GREEN
+                //BODY
                 new Sphere(new Point(14, 4, 1), 3)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
-                //HEAD OF GREEN
+                //HEAD
                 new Sphere(new Point(16, 4, 3.5), 2)
                         .setEmission(Color.YELLOW)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
-
-                //PUPIL OF GREEN
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL
                 new Sphere(new Point(17, 5, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 3, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //white around eyes
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
@@ -345,10 +344,9 @@ class CameraTest {
     public void birdWithDepthOfField() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+                .setVPSize(300, 300).setVPDistance(800);
 
         camera.setDepthButton(true, 3, 50);
-       // camera.setJaggedEdgesButton(true,20);
 
 
         Geometries geometries = new Geometries(
@@ -439,7 +437,7 @@ class CameraTest {
 
         ImageWriter imageWriter = new ImageWriter("bird with depth of field", 600, 600);
         camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2))//.setSoftShadowsButton(false,30))
+                .setRayTracer(new RayTracerBasic(scene2))
                 .renderImage()
                 .writeToImage();
     }
@@ -447,7 +445,7 @@ class CameraTest {
     public void birdFromUpTop() {
 
        Camera camera = new Camera(new Point(0,0,100), new Vector(0.1,0,-1), new Vector(-1, 0, 1))
-               .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+               .setVPSize(300, 300).setVPDistance(800);
 
 
 
@@ -463,25 +461,23 @@ class CameraTest {
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
-                //HEAD OF GREEN
+                //HEAD
                 new Sphere(new Point(16, 4, 3.5), 2)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
 
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 5, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 3, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //white around eyes
-                //PUPIL OF GREEN
                 new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
                 new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
@@ -539,7 +535,7 @@ class CameraTest {
 
         ImageWriter imageWriter = new ImageWriter("bird from up top", 600, 600);
         camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
+                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(true,30))
                 .renderImage()
                 .writeToImage();
     }
@@ -549,7 +545,7 @@ class CameraTest {
 
         //side camera
         Camera camera = new Camera(new Point(3,100,1), new Vector(0,-1,0), new Vector(0, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(false);
+                .setVPSize(300, 300).setVPDistance(800);
 
 
 
@@ -560,30 +556,30 @@ class CameraTest {
                 new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
                 //right
                 new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
-                //BODY OF GREEN
+                //BODY
                 new Sphere(new Point(14, 4, 1), 3)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
-                //HEAD OF GREEN
+                //HEAD
                 new Sphere(new Point(16, 4, 3.5), 2)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
 
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 5, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 3, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //white around eyes
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
@@ -679,7 +675,7 @@ class CameraTest {
     public void birdFromFront() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(true,);
+                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(true,5);
 
 
         Geometries geometries = new Geometries(
@@ -689,30 +685,28 @@ class CameraTest {
                 new Triangle(new Point(14, 4, 4),new Point(14, 1, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
                 //right
                 new Triangle(new Point(14, 4, 4),new Point(14, 7, 1),new Point(9, 4, -10)).setEmission(Color.YELLOW),
-                //BODY OF GREEN
+                //BODY
                 new Sphere(new Point(14, 4, 1), 3)
                         .setEmission(Color.YELLOW)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
 
-                //HEAD OF GREEN
+                //HEAD
                 new Sphere(new Point(16, 4, 3.5), 2)
                         .setEmission(Color.YELLOW)
-                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),//.setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30).setKt(new Double3(0.7))),
-
-                //PUPIL OF GREEN
+                        .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
+                //PUPIL
                 new Sphere(new Point(17, 5, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+                //PUPIL
                 new Sphere(new Point(17, 3, 4.6), 0.3)
                         .setEmission(Color.BLACK)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
                 //white around eyes
-                //PUPIL OF GREEN
                 new Sphere(new Point(16.8, 4.9, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),
-                //PUPIL OF GREEN
+
                 new Sphere(new Point(16.8, 3.1, 4.6), 0.4)
                         .setEmission(Color.WHITE)
                         .setMaterial(new Material().setKd(0.5).setKs(0.5).setShininess(30)),

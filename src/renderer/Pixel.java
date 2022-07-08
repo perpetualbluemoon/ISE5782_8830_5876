@@ -121,6 +121,8 @@ class Pixel {
                 lastPrinted = percentage;
                 out.printf(PRINT_FORMAT,percentage / 10d);
 
+
+
             }
         }
     }
