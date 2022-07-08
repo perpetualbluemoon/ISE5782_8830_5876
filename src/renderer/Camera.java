@@ -242,7 +242,7 @@ public class Camera {
             int threadsCount = 3;
             while (threadsCount-- > 0) {
                 new Thread(() -> {
-                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.pixelDone()) {
+                    for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.printPixel(),Pixel.pixelDone()) {
                         if(_adaptiveSuperSampling) {
                             //implementing the adaptive super sampling time improvement of part 9
                             Color thisPixelColor = castRay(pixel.col, pixel.row);

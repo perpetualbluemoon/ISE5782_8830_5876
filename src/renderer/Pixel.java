@@ -120,7 +120,7 @@ class Pixel {
                 last = current;
                 lastPrinted = percentage;
                 out.printf(PRINT_FORMAT,percentage / 10d);
-
+                System.out.println(PRINT_FORMAT+percentage / 10d);
 
 
             }
