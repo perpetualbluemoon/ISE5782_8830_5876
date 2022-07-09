@@ -238,15 +238,16 @@ public class Camera {
             throw new MissingResourceException("Image creation details are not initialized", "Camera", "Writer details");
         //implementing the multi-threading time improvement of part 9
         if (_MultiThreadingButton) {
+
             Pixel.initialize(_imageWriter.getNy(), _imageWriter.getNx(), printInterval); //debug print is print interval
-            int threadsCount = 3;
+           int threadsCount = 3;
             while (threadsCount-- > 0) {
                 new Thread(() -> {
                     for (Pixel pixel = new Pixel(); pixel.nextPixel(); Pixel.printPixel(),Pixel.pixelDone()) {
                         if(_adaptiveSuperSampling) {
                             //implementing the adaptive super sampling time improvement of part 9
                             Color thisPixelColor = castRay(pixel.col, pixel.row);
-                            _imageWriter.writePixel(pixel.col, pixel.row, thisPixelColor);
+                           _imageWriter.writePixel(pixel.col, pixel.row, thisPixelColor);
                         }
                         else{
                             Color thisPixelColor = castRayOld(pixel.col, pixel.row);

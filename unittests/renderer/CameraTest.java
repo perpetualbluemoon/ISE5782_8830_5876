@@ -675,7 +675,7 @@ class CameraTest {
     public void birdFromFront() {
         //front camera
         Camera camera = new Camera(new Point(65, 5, 20), new Vector(-7, -0.5, -2), new Vector(-1, 0, 1))
-                .setVPSize(300, 300).setVPDistance(800).setAdaptiveSuperSampling(true,5);
+                .setVPSize(300, 300).setVPDistance(800).setMultithreading(3);//setAdaptiveSuperSampling(true,5);
 
 
         Geometries geometries = new Geometries(
@@ -764,7 +764,7 @@ class CameraTest {
 
         ImageWriter imageWriter = new ImageWriter("bird from front", 600, 600);
         camera.setImageWriter(imageWriter)
-                .setRayTracer(new RayTracerBasic(scene2).setSoftShadowsButton(false,30))
+                .setRayTracer(new RayTracerBasic(scene2))
                 .renderImage()
                 .writeToImage();
     }
